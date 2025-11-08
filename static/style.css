@@ -1,0 +1,182 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    
+    /* background-image: url('https://images.unsplash.com/photo-1483347756197-71ef80e95f73?auto=format&fit=crop&w=1600&q=80'); */
+    
+    /* Option 3: Forest Sunrise */
+    /* background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1600&q=80'); */
+    
+    /* Option 4: Ocean Sunset */
+    /* background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80'); */
+    
+    /* Option 5: Misty Mountains */
+    background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1600&q=80');
+    
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    font-size: 120%;
+}
+
+
+.card {
+    /* --- ENHANCED GLASSMORPHISM EFFECT --- */
+    background: rgba(255, 255, 255, 0.08); /* More translucent white tint */
+    backdrop-filter: blur(16px) saturate(180%); /* Stronger blur + color boost */
+    -webkit-backdrop-filter: blur(16px) saturate(180%); /* Safari support */
+    
+    border: 1px solid rgba(255, 255, 255, 0.25); /* Brighter border for glass edge */
+    border-top: 1px solid rgba(255, 255, 255, 0.4); /* Top highlight */
+    border-left: 1px solid rgba(255, 255, 255, 0.3); /* Left highlight */
+    
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), /* Deep shadow */
+                inset 0 1px 0 rgba(255, 255, 255, 0.2); /* Inner glow */
+
+    color: whitesmoke;
+    padding: 2em;
+    border-radius: 30px;
+    width: 100%;
+    max-width: 420px;
+    margin: 1em;
+    transition: all 0.3s ease;
+}
+
+
+.search {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* Enhanced glassy button */
+button {
+    margin: 1.7em;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    height: 45px;
+    width: 45px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: whitesmoke;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+
+/* Enhanced glassy search bar */
+input.searchbar {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    outline: none;
+    padding: 0.4em 1em;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: whitesmoke;
+    font-family: inherit;
+    font-size: 105%;
+    width: calc(100% - 100px);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+
+input.searchbar::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+
+button:hover {
+    background: rgba(255, 255, 255, 0.9);
+    color: black;
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+
+h1.temp {
+    margin: 0;
+    margin-bottom: 0.4em;
+}
+
+
+.flex {
+    display: flex;
+    align-items: center;
+}
+
+
+.description {
+    text-transform: capitalize;
+    margin-left: 8px;
+}
+
+
+/* Base style for the PM2.5 text */
+.pm25 {
+    margin-top: 0.5em;
+    transition: color 0.3s ease;
+}
+
+
+.weather.loading {
+    visibility: hidden;
+    max-height: 20px;
+    position: relative;
+}
+
+
+.weather.loading:after{
+    visibility: visible;
+    content: "Loading....";
+    color: white;
+    position: absolute;
+    top: 0;
+    left: 20px;
+}
+
+
+.card:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+
+.searchbar:hover {
+    transform: scale(1.02);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+
+/* --- AQI COLOR CLASSES --- */
+.aqi-good {
+    color: #00E400;
+}
+.aqi-moderate {
+    color: #FFFF00;
+}
+.aqi-unhealthy-sensitive {
+    color: #FF7E00;
+}
+.aqi-unhealthy {
+    color: #FF0000;
+}
+.aqi-very-unhealthy {
+    color: #99004C;
+}
+.aqi-hazardous {
+    color: #7E0023;
+}
