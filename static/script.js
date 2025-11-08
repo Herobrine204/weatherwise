@@ -99,4 +99,4 @@ document.querySelector(".searchbar").addEventListener("keyup", function(event){
 });
 
 // Load default city on startup
-weather.fetchWeather("Durgapur");
+weather.fetchWeather("Delhi");
