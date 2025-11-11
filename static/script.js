@@ -1,25 +1,52 @@
-// --- NEW: Key for saving history in localStorage ---
+// Key for saving history in localStorage
 const SEARCH_HISTORY_KEY = 'weatherwise-history';
 
 /**
- * --- NEW: Loads search history from localStorage into the datalist. ---
+ * --- NEW: Gets history from localStorage and builds the new dropdown ---
  */
-function loadSearchHistory() {
+function populateHistoryDropdown() {
     const history = JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY)) || [];
-    const datalist = document.getElementById('search-history');
+    const dropdown = document.getElementById('history-dropdown');
     
-    if (datalist) {
-        datalist.innerHTML = ''; // Clear old options
+    if (!dropdown) return;
+
+    dropdown.innerHTML = ''; // Clear old items
+
+    if (history.length === 0) {
+        // Optional: Show a message if history is empty
+        dropdown.innerHTML = '<div class="history-item" style="cursor:default;">No recent searches</div>';
+    } else {
         history.forEach(city => {
-            const option = document.createElement('option');
-            option.value = city;
-            datalist.appendChild(option);
+            const item = document.createElement('div');
+            item.className = 'history-item';
+            item.textContent = city;
+            
+            // --- NEW: Add click event to each history item ---
+            item.addEventListener('click', () => {
+                document.querySelector('.searchbar').value = city; // Set search bar value
+                weather.search(); // Run the search
+                hideHistoryDropdown(); // Hide dropdown after clicking
+            });
+            dropdown.appendChild(item);
         });
+    }
+
+    // Show the dropdown
+    dropdown.classList.add('visible');
+}
+
+/**
+ * --- NEW: Hides the custom dropdown ---
+ */
+function hideHistoryDropdown() {
+    const dropdown = document.getElementById('history-dropdown');
+    if (dropdown) {
+        dropdown.classList.remove('visible');
     }
 }
 
 /**
- * --- NEW: Saves a new city to the search history in localStorage. ---
+ * Saves a new city to the search history in localStorage.
  */
 function saveSearch(city) {
     if (!city || city.trim() === "") return; // Don't save empty searches
@@ -27,7 +54,7 @@ function saveSearch(city) {
     let history = JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY)) || [];
     
     // Remove city if it already exists (so we can move it to the front)
-    const existingIndex = history.indexOf(city);
+    const existingIndex = history.map(c => c.toLowerCase()).indexOf(city.toLowerCase());
     if (existingIndex > -1) {
         history.splice(existingIndex, 1);
     }
@@ -123,16 +150,18 @@ let weather = {
         document.querySelector(".weather").classList.remove("loading");
         
         // --- THIS LINE IS COMMENTED OUT ---
-        // This stops the background from changing with the city.
         // document.body.style.backgroundImage = "url('https://source.unsplash.com/1600x900/?" + name + "')"
     },
 
     search : function() {
         // --- UPDATED THIS FUNCTION ---
-        const city = document.querySelector(".searchbar").value;
+        const searchInput = document.querySelector(".searchbar");
+        const city = searchInput.value;
+        
         this.fetchWeather(city); // Fetch the weather
         saveSearch(city); // Save the search to history
-        loadSearchHistory(); // Update the datalist so it's visible next time
+        hideHistoryDropdown(); // Hide dropdown after searching
+        searchInput.blur(); // Un-focus the search bar
     }
 };
 
@@ -146,9 +175,22 @@ document.querySelector(".searchbar").addEventListener("keyup", function(event){
     }
 });
 
+// --- NEW: Show dropdown on focus ---
+document.querySelector('.searchbar').addEventListener('focus', () => {
+    populateHistoryDropdown();
+});
+
+// --- NEW: Hide dropdown when clicking outside ---
+window.addEventListener('click', function(e) {
+    const searchContainer = document.querySelector('.search');
+    // If the click is outside the .search container, hide the dropdown
+    if (searchContainer && !searchContainer.contains(e.target)) {
+        hideHistoryDropdown();
+    }
+});
+
 // Load default city on startup
 weather.fetchWeather("Delhi");
 
-// --- NEW: Load history from localStorage when the page first loads ---
-// We use DOMContentLoaded to make sure the HTML elements are ready
-document.addEventListener('DOMContentLoaded', loadSearchHistory);
+// --- REMOVED: Old DOMContentLoaded listener ---
+// (No longer needed, as we populate the list on focus)
