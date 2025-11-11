@@ -4,10 +4,9 @@ const SEARCH_HISTORY_KEY = 'weatherwise-history';
 // --- All API Key prompt code is REMOVED ---
 
 /**
- * --- NEW: Fetches the 5-day forecast from OUR backend ---
+ * --- Fetches the 5-day forecast from OUR backend ---
  */
 async function fetchForecast(lat, lon) {
-    // This now calls your own server, which is 100% safe
     const forecastUrl = `/forecast?lat=${lat}&lon=${lon}`;
     
     try {
@@ -29,7 +28,7 @@ async function fetchForecast(lat, lon) {
 }
 
 /**
- * --- NEW: Processes and displays the 5-day forecast ---
+ * --- Processes and displays the 5-day forecast ---
  */
 function displayForecast(data) {
     const forecastContainer = document.getElementById('forecast-container');
@@ -41,7 +40,6 @@ function displayForecast(data) {
         return;
     }
     
-    // Get 5 days, picking the data from 12:00 PM
     const dailyData = [
         forecastList[4], // Tomorrow
         forecastList[12], // Day 2
@@ -53,14 +51,14 @@ function displayForecast(data) {
     const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
     dailyData.forEach(day => {
-        if (!day) return; // Skip if data is missing
+        if (!day) return; 
         const date = new Date(day.dt * 1000); 
         const dayName = dayNames[date.getDay()]; 
         const icon = day.weather[0].icon;
         const temp = Math.round(day.main.temp);
 
         const box = document.createElement('div');
-        box.className = 'forecast-item'; // Use 'forecast-item' for new style
+        box.className = 'forecast-item'; 
         box.innerHTML = `
             <h4>${dayName}</h4>
             <img src="https://openweathermap.org/img/wn/${icon}.png" alt="${day.weather[0].description}">
@@ -68,6 +66,9 @@ function displayForecast(data) {
         `;
         forecastContainer.appendChild(box);
     });
+
+    // --- NEW: Remove loading class to trigger animation ---
+    document.getElementById('forecast-box').classList.remove('loading');
 }
 
 
@@ -162,7 +163,7 @@ function getPm25Details(pm2_5) {
 }
 
 /**
- * --- NEW: Updates the Safety Tips box ---
+ * --- Updates the Safety Tips box ---
  */
 function updateSafetyInfo(data) {
     const { speed, description, pm2_5 } = data;
@@ -204,6 +205,9 @@ function updateSafetyInfo(data) {
         li.innerText = tip;
         tipsList.appendChild(li);
     });
+
+    // --- NEW: Remove loading class to trigger animation ---
+    document.getElementById('tips-box').classList.remove('loading');
 }
 
 
@@ -233,7 +237,6 @@ let weather = {
     },
 
     displayWeather: function(data) {
-        // We get all data here
         const { name, icon, description, temp, humidity, speed, pm2_5, lat, lon } = data;
         
         // Update the main weather bar
@@ -258,6 +261,10 @@ let weather = {
     },
 
     search : function() {
+        // --- NEW: Add loading class back before searching ---
+        document.getElementById('tips-box').classList.add('loading');
+        document.getElementById('forecast-box').classList.add('loading');
+        
         const searchInput = document.querySelector(".searchbar");
         const city = searchInput.value;
         
@@ -284,8 +291,6 @@ document.querySelector('.searchbar').addEventListener('focus', () => {
 
 window.addEventListener('click', function(e) {
     const searchContainer = document.querySelector('.search');
-    // --- THIS IS THE FIX ---
-    // Was 'e.targe', now 'e.target'
     if (searchContainer && !searchContainer.contains(e.target)) {
         hideHistoryDropdown();
     }
