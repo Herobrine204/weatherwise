@@ -1,307 +1,413 @@
-// Key for saving history in localStorage
-const SEARCH_HISTORY_KEY = 'weatherwise-history';
-
-// --- No API Key prompt needed! ---
-
-/**
- * --- Fetches the 5-day forecast from OUR backend ---
- */
-async function fetchForecast(lat, lon) {
-    // This now calls your own server, which is 100% safe
-    const forecastUrl = `/forecast?lat=${lat}&lon=${lon}`;
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center; 
     
-    try {
-        const response = await fetch(forecastUrl);
-        if (!response.ok) {
-            throw new Error("Could not fetch forecast.");
-        }
-        const data = await response.json();
-        
-        if (data.error) {
-            throw new Error(`Forecast error: ${data.error}`);
-        }
-        
-        displayForecast(data); // Send the full data to be processed
-    } catch (error) {
-        console.error("Error fetching forecast:", error);
-        // We won't alert, but we'll show an error in the box
-        const forecastContainer = document.getElementById('forecast-container');
-        forecastContainer.innerHTML = 'Forecast unavailable.';
-        // Still remove loading so the error is visible
-        document.getElementById('forecast-box').classList.remove('loading');
-    }
+    height: 100%; 
+    min-height: 100vh; 
+    padding-top: 6em; 
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto-format&fit=crop&w=1600&q=80');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    font-size: 100%;
 }
 
-/**
- * --- Processes and displays the 5-day forecast ---
- */
-function displayForecast(data) {
-    const forecastContainer = document.getElementById('forecast-container');
-    forecastContainer.innerHTML = ''; // Clear old forecast
-    
-    const forecastList = data.list;
-    if (!forecastList) {
-        forecastContainer.innerText = "Forecast data is unavailable.";
-        document.getElementById('forecast-box').classList.remove('loading');
-        return;
-    }
-    
-    const dailyData = [
-        forecastList[4], // Tomorrow
-        forecastList[12], // Day 2
-        forecastList[20], // Day 3
-        forecastList[28], // Day 4
-        forecastList[36]  // Day 5
-    ];
-
-    const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-    dailyData.forEach(day => {
-        if (!day) return; 
-        const date = new Date(day.dt * 1000); 
-        const dayName = dayNames[date.getDay()]; 
-        const icon = day.weather[0].icon;
-        const temp = Math.round(day.main.temp);
-
-        const box = document.createElement('div');
-        box.className = 'forecast-item'; 
-        box.innerHTML = `
-            <h4>${dayName}</h4>
-            <img src="https://openweathermap.org/img/wn/${icon}.png" alt="${day.weather[0].description}">
-            <div class="forecast-temp">${temp}°C</div>
-        `;
-        forecastContainer.appendChild(box);
-    });
-
-    // --- Remove loading class to trigger animation ---
-    document.getElementById('forecast-box').classList.remove('loading');
+/* --- LOGO HEADER STYLE --- */
+.logo-header {
+    position: absolute;
+    top: 1.5em;
+    left: 2em;
+    display: flex;
+    align-items: center;
+    color: whitesmoke;
+    z-index: 100; /* Stay on top */
 }
 
-
-/**
- * Gets history from localStorage and builds the new dropdown
- */
-function populateHistoryDropdown() {
-    const history = JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY)) || [];
-    const dropdown = document.getElementById('history-dropdown');
-    
-    if (!dropdown) return;
-
-    dropdown.innerHTML = ''; // Clear old items
-
-    if (history.length === 0) {
-        dropdown.innerHTML = '<div class="history-item" style="cursor:default;">No recent searches</div>';
-    } else {
-        history.forEach(city => {
-            const item = document.createElement('div');
-            item.className = 'history-item';
-            item.textContent = city;
-            
-            item.addEventListener('click', () => {
-                document.querySelector('.searchbar').value = city;
-                weather.search(); 
-                hideHistoryDropdown(); 
-            });
-            dropdown.appendChild(item);
-        });
-    }
-
-    dropdown.classList.add('visible');
+.logo-header img {
+    width: 40px;
+    height: 40px;
+    margin-right: 0.75em;
 }
 
-/**
- * Hides the custom dropdown
- */
-function hideHistoryDropdown() {
-    const dropdown = document.getElementById('history-dropdown');
-    if (dropdown) {
-        dropdown.classList.remove('visible');
-    }
+.logo-header span {
+    font-size: 1.5em;
+    font-weight: 600;
+}
+/* --- END OF LOGO STYLE --- */
+
+
+.card {
+    background: rgba(255, 255, 255, 0.08); 
+    backdrop-filter: blur(16px) saturate(180%); 
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.25); 
+    border-top: 1px solid rgba(255, 255, 255, 0.4); 
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.2); 
+    color: whitesmoke; 
+    padding: 1.5em 2.5em; 
+    border-radius: 50px; 
+    width: 100%;
+    max-width: 1200px; 
+    margin: 1em;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
 }
 
-/**
- * Saves a new city to the search history in localStorage.
- */
-function saveSearch(city) {
-    if (!city || city.trim() === "") return; 
-
-    let history = JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY)) || [];
-    
-    const existingIndex = history.map(c => c.toLowerCase()).indexOf(city.toLowerCase());
-    if (existingIndex > -1) {
-        history.splice(existingIndex, 1);
-    }
-
-    history.unshift(city);
-    history = history.slice(0, 10);
-    localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
+/* --- STYLES FOR INFO BOXES --- */
+.info-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 1em 3em 1em;
+    gap: 2em;
 }
 
-/**
- * A helper function to get the air quality details
- * based on the PM2.5 value.
- */
-function getPm25Details(pm2_5) {
-    let text = "";
-    let cssClass = "";
-
-    if (pm2_5 <= 12.0) {
-        text = "Good";
-        cssClass = "aqi-good";
-    } else if (pm2_5 <= 35.4) {
-        text = "Moderate";
-        cssClass = "aqi-moderate";
-    } else if (pm2_5 <= 55.4) {
-        text = "Unhealthy for Sensitive";
-        cssClass = "aqi-unhealthy-sensitive";
-    } else if (pm2_5 <= 150.4) {
-        text = "Unhealthy";
-        cssClass = "aqi-unhealthy";
-    } else if (pm2_5 <= 250.4) {
-        text = "Very Unhealthy";
-        cssClass = "aqi-very-unhealthy";
-    } else {
-        text = "Hazardous";
-        cssClass = "aqi-hazardous";
-    }
-
-    return { text: text, cssClass: cssClass };
+.info-box {
+    background: rgba(255, 255, 255, 0.08); 
+    backdrop-filter: blur(16px) saturate(180%); 
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.25); 
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    
+    color: whitesmoke;
+    padding: 1.5em 2em;
+    border-radius: 30px;
+    flex-basis: 50%; 
+    
+    /* --- Animation --- */
+    transition: all 0.5s ease-out;
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
 }
 
-/**
- * --- Updates the Safety Tips box ---
- */
-function updateSafetyInfo(data) {
-    const { speed, description, pm2_5 } = data;
-    let tips = [];
-    
-    // PM2.5 Tips
-    if (pm2_5 <= 12.0) {
-        tips.push("✔️ Air quality is excellent.");
-    } else if (pm2_5 <= 55.4) {
-        tips.push("⚠️ Air quality is moderate. Sensitive groups should limit outdoor activity.");
-    } else {
-        tips.push("❌ Air quality is poor. Avoid outdoor activity and wear a mask if outside.");
-    }
-    
-    // Weather Description Tips
-    if (description.includes("rain")) {
-        tips.push("☔ It's raining. Don't forget an umbrella!");
-    }
-    if (description.includes("thunderstorm")) {
-        tips.push("⚡ Thunderstorms expected. Stay indoors and avoid electronics.");
-    }
-    if (description.includes("sun") || description.includes("clear")) {
-        tips.push("☀️ Clear skies. A great day to be outside (if AQI is good)!");
-    }
-    if (description.includes("fog") || description.includes("haze") || description.includes("mist")) {
-        tips.push("🌫️ Low visibility. Be careful if driving.");
-    }
-    
-    // Wind Tips
-    if (speed > 30) {
-        tips.push("💨 High winds! Secure loose items outdoors.");
-    }
-
-    // --- Update the HTML ---
-    const tipsList = document.getElementById('safety-tips');
-    tipsList.innerHTML = ''; // Clear old tips
-    tips.forEach(tip => {
-        const li = document.createElement('li');
-        li.innerText = tip;
-        tipsList.appendChild(li);
-    });
-
-    // --- Remove loading class to trigger animation ---
-    document.getElementById('tips-box').classList.remove('loading');
+/* --- 'loading' state for info boxes --- */
+.info-box.loading {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(20px);
 }
 
 
-let weather = {
+.info-box h3 {
+    margin-top: 0;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    padding-bottom: 0.5em;
+    text-align: center;
+}
+
+#safety-tips {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+    font-size: 0.95em;
+}
+
+#safety-tips li {
+    margin-bottom: 0.8em;
+}
+
+.forecast-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 1em;
+}
+
+.forecast-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-basis: 100%;
+    flex-grow: 1;
+}
+
+.forecast-item h4 { 
+    margin: 0 0 0.5em 0;
+    font-weight: 600;
+    font-size: 0.9em;
+}
+
+.forecast-item img { 
+    width: 50px;
+    height: 50px;
+    margin: 0;
+}
+
+.forecast-item .forecast-temp {
+    font-size: 1.1em;
+    font-weight: 600;
+}
+/* --- END OF INFO BOX STYLES --- */
+
+
+.search {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0 1em 0; 
+    position: relative; 
+}
+
+
+button {
+    margin: 0 0 0 1.5em; 
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    height: 45px;
+    width: 45px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: whitesmoke; 
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0; 
+}
+
+
+input.searchbar {
+    border: 1px solid rgba(255, 255, 255, 0.3); 
+    background: rgba(0, 0, 0, 0.25); 
+    box-shadow: none; 
+    outline: none;
+    padding: 0.4em 1em;
+    border-radius: 24px;
+    color: whitesmoke; 
+    font-family: inherit;
+    font-size: 105%;
+    width: 100%; 
+    transition: all 0.3s ease;
+}
+
+
+input.searchbar::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+
+button:hover {
+    background: rgba(255, 255, 255, 0.9);
+    color: black;
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.weather {
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5em; 
+}
+
+h1.temp {
+    margin: 0;
+    font-size: 1.75em;
+}
+
+.city {
+    font-size: 1.5em;
+    font-weight: 600;
+}
+
+.flex {
+    display: flex;
+    align-items: center;
+}
+
+
+.description {
+    text-transform: capitalize;
+    margin-left: 8px;
+}
+
+.humidity, .wind {
+    margin: 0;
+}
+
+
+.pm25 {
+    margin-top: 0; 
+    transition: color 0.3s ease;
+}
+
+
+.weather.loading {
+    visibility: hidden;
+    max-height: 20px;
+    position: relative;
+}
+
+
+.weather.loading:after{
+    visibility: visible;
+    content: "Loading....";
+    color: white;
+    position: absolute;
+    top: 0;
+    left: 20px;
+}
+
+
+.card:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+
+.searchbar:hover {
+    transform: scale(1.02);
+    background: rgba(0, 0, 0, 0.35); 
+    box-shadow: none;
+}
+
+
+input.searchbar:focus {
+    color: #333; 
+    background: rgba(255, 255, 255, 0.9); 
+    box-shadow: none;
+}
+
+
+input.searchbar:focus::placeholder {
+    color: #555;
+}
+
+
+/* Solid, dark background for high visibility */
+.history-dropdown {
+    position: absolute;
+    top: calc(100% + 5px); 
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.7); 
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    border-radius: 20px; 
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    padding: 0.5em 0;
+    z-index: 10;
+    max-height: 200px; 
+    overflow-y: auto;
+    display: none; 
+}
+
+.history-dropdown.visible {
+    display: block;
+}
+
+.history-item {
+    padding: 0.75em 1.5em;
+    color: whitesmoke; 
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background 0.2s ease;
+}
+
+.history-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+
+.aqi-good {
+    color: #00E400;
+}
+.aqi-moderate {
+    color: #FFFF00;
+}
+.aqi-unhealthy-sensitive {
+    color: #FF7E00;
+}
+.aqi-unhealthy {
+    color: #FF0000;
+}
+.aqi-very-unhealthy {
+    color: #99004C;
+}
+.aqi-hazardous {
+    color: #7E0023;
+}
+
+/* --- FOOTER STYLE --- */
+footer {
+    text-align: center;
+    color: rgba(245, 245, 245, 0.7); 
+    padding: 1em 0 2em 0;
+    font-size: 0.9em;
+    /* Pushes footer to the bottom */
+    margin-top: auto;
+}
+
+
+@media screen and (max-width: 950px) {
+    /* --- Adjust logo for mobile --- */
+    .logo-header {
+        top: 1em;
+        left: 1.5em;
+    }
     
-    fetchWeather : function (city) {
-        fetch("/weather?city=" + encodeURIComponent(city))
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("City not found or server error");
-                }
-                return response.json();
-            })
-            .then((data) => {
-                if (data.error) {
-                    alert(data.error);
-                    document.querySelector(".weather").classList.add("loading");
-                } else {
-                    this.displayWeather(data);
-                }
-            })
-            .catch((error) => {
-                console.error("Error fetching weather:", error);
-                alert("Could not retrieve weather data. " + error.message);
-            });
-    },
-
-    displayWeather: function(data) {
-        const { name, icon, description, temp, humidity, speed, pm2_5, lat, lon } = data;
-        
-        // Update the main weather bar
-        document.querySelector(".city").innerText = "Weather in " + name;
-        document.querySelector(".icon").src = "https://openweathermap.org/img/wn/" + icon + ".png";
-        document.querySelector(".description").innerText = description;
-        document.querySelector(".temp").innerText = temp + "°C";
-        document.querySelector(".humidity").innerText = "Humidity: " + humidity + "%";
-        document.querySelector(".wind").innerText = "Wind speed: " + speed + " km/h";
-        
-        let pm25Element = document.querySelector(".pm25");
-        let pm25Details = getPm25Details(pm2_5);
-        pm25Element.innerText = `PM2.5: ${pm2_5} μg/m³ (${pm25Details.text})`;
-        pm25Element.className = "pm25"; // Reset classes
-        pm25Element.classList.add(pm25Details.cssClass); // Add new AQI class
-
-        document.querySelector(".weather").classList.remove("loading");
-        
-        // --- Call BOTH functions ---
-        updateSafetyInfo(data); // Update the tips
-        fetchForecast(lat, lon); // Fetch the 5-day forecast
-    },
-
-    search : function() {
-        // --- Add loading class back before searching ---
-        document.getElementById('tips-box').classList.add('loading');
-        document.getElementById('forecast-box').classList.add('loading');
-        
-        const searchInput = document.querySelector(".searchbar");
-        const city = searchInput.value;
-        
-        this.fetchWeather(city);
-        saveSearch(city); 
-        hideHistoryDropdown(); 
-        searchInput.blur(); 
+    body {
+        /* Re-adjust padding for logo */
+        padding-top: 5em;
     }
-};
 
-document.querySelector(".search button").addEventListener("click", function() {
-    weather.search();
-});
-
-document.querySelector(".searchbar").addEventListener("keyup", function(event){
-    if(event.key == "Enter"){
-        weather.search();
+    .card {
+        max-width: 420px;
+        margin: 0.5em;
+        padding: 1.5em 2em;
+        border-radius: 30px; 
     }
-});
 
-document.querySelector('.searchbar').addEventListener('focus', () => {
-    populateHistoryDropdown();
-});
-
-// --- THIS IS THE BUG FIX ---
-window.addEventListener('click', function(e) {
-    const searchContainer = document.querySelector('.search');
-    // 'e.targe' is now 'e.target'
-    if (searchContainer && !searchContainer.contains(e.target)) {
-        hideHistoryDropdown();
+    /* --- Stack info boxes on mobile --- */
+    .info-container {
+        flex-direction: column;
+        margin-left: 0.5em;
+        margin-right: 0.5em;
+        width: calc(100% - 1em);
+        gap: 1em;
     }
-});
 
-// Load default city on startup
-weather.fetchWeather("Delhi");
+    .forecast-container {
+        gap: 0.5em; 
+    }
+    
+    .forecast-item h4 {
+        font-size: 0.8em;
+    }
+    .forecast-item img {
+        width: 40px;
+        height: 40px;
+    }
+    .forecast-item .forecast-temp {
+        font-size: 1em;
+    }
+    
+    .weather {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.8em;
+    }
+    
+    .search {
+        margin-bottom: 1em;
+    }
+
+    .history-item {
+        padding: 0.75em 1em;
+    }
+}
