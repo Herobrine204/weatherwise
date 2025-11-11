@@ -1,9 +1,9 @@
 body {
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Changed from 'center' to move card up */
+    align-items: flex-start;
     height: 100vh;
-    padding-top: 5em; /* Added padding to give space from the top */
+    padding-top: 3em; /* Reduced padding from 5em */
     margin: 0;
     font-family: 'Open Sans', sans-serif;
     
@@ -14,7 +14,7 @@ body {
     background-position: center center;
     background-repeat: no-repeat;
     background-attachment: fixed;
-    font-size: 120%;
+    font-size: 100%; /* Reduced from 120% to shrink everything */
 }
 
 
@@ -35,7 +35,7 @@ body {
     padding: 2em;
     border-radius: 30px;
     width: 100%;
-    max-width: 700px; /* --- Changed from 420px to make it rectangular --- */
+    max-width: 600px; /* --- Reduced from 700px to make it more compact --- */
     margin: 1em;
     transition: all 0.3s ease;
 }
@@ -99,7 +99,7 @@ button:hover {
 
 h1.temp {
     margin: 0;
-    margin-bottom: 0.2em; /* Adjusted margin for new layout */
+    margin-bottom: 0.2em;
 }
 
 
@@ -175,13 +175,12 @@ h1.temp {
 }
 
 
-/* --- NEW STYLES FOR RECTANGULAR LAYOUT --- */
+/* --- STYLES FOR RECTANGULAR LAYOUT --- */
 
 .city {
-    text-align: center; /* Center the city name */
+    text-align: center;
 }
 
-/* New flex container for the two columns */
 .weather-body {
     display: flex;
     justify-content: space-around;
@@ -189,17 +188,40 @@ h1.temp {
     margin-top: 1.5em;
 }
 
-/* Column 1: Main temp and icon */
 .weather-main {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-/* Column 2: Humidity, Wind, PM2.5 */
 .weather-details {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.8em; /* Adds nice spacing between detail lines */
+    gap: 0.8em;
+}
+
+
+/* --- NEW: RESPONSIVENESS FOR MOBILE --- */
+@media screen and (max-width: 650px) {
+    body {
+        padding-top: 1.5em;
+        font-size: 95%; /* Slightly smaller text on small screens */
+    }
+
+    .card {
+        max-width: 420px; /* Revert to a more "mobile-friendly" width */
+        margin: 0.5em;
+    }
+
+    /* Stack the two columns vertically */
+    .weather-body {
+        flex-direction: column;
+        gap: 1.5em; /* Add space between the two stacked sections */
+    }
+    
+    /* Center the details text (Humidity, Wind) */
+    .weather-details {
+        align-items: center;
+    }
 }
