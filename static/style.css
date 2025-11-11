@@ -68,7 +68,7 @@ input.searchbar {
     border-radius: 24px;
     
     /* --- THIS IS THE CHANGED LINE --- */
-    background: rgba(255, 255, 255, 1.5); /* Was 0.15, now 0.3 */
+    background: rgba(255, 255, 255, 10); /* Was 0.15, now 0.3 */
     
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
