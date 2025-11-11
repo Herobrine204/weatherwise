@@ -1,26 +1,22 @@
 // Key for saving history in localStorage
 const SEARCH_HISTORY_KEY = 'weatherwise-history';
 
-// --- NEW: Global variables for the map ---
+// --- Global variables for the map ---
 let map;
 let marker;
 
 /**
- * --- NEW: Initializes the map on page load ---
+ * --- Initializes the map on page load ---
  */
 function initMap() {
-    // Check if map element exists
     if (!document.getElementById('map')) return;
     
-    // Start map centered on Delhi
     map = L.map('map').setView([28.6139, 77.2090], 10);
 
-    // Add a free map "tile layer" from OpenStreetMap
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Add a marker that we can move later
     marker = L.marker([28.6139, 77.2090]).addTo(map);
 }
 
@@ -154,14 +150,14 @@ let weather = {
         pm25Element.innerText = `PM2.5: ${pm2_5} μg/m³ (${pm25Details.text})`;
         
         // --- THIS IS THE FIX ---
-        // It was "pm2s" before, which caused a crash on the next search
+        // I changed "pm2s" (my typo) to "pm25" (correct)
         pm25Element.className = "pm25"; 
         
         pm25Element.classList.add(pm25Details.cssClass); 
 
         document.querySelector(".weather").classList.remove("loading");
         
-        // --- NEW: Update the map's position ---
+        // --- Update the map's position ---
         if (map && marker) {
             const newLocation = [lat, lon];
             map.setView(newLocation, 10); // Move the map
@@ -207,5 +203,5 @@ window.addEventListener('click', function(e) {
 // Load default city on startup
 weather.fetchWeather("Delhi");
 
-// --- NEW: Initialize the map when the page is ready ---
+// --- Initialize the map when the page is ready ---
 document.addEventListener('DOMContentLoaded', initMap);
