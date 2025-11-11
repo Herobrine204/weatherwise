@@ -8,10 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-     integrity="sha256-p4NxAoJBhIYCNioTmqMtkLpSstMhoCNEPXB1PynK/KA="
-     crossorigin=""/>
-
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>WeatherWise</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/favicon.png') }}">
@@ -38,11 +34,22 @@
         </div>
     </div>
 
-    <div id="map"></div>
+    <div class="info-container">
+        
+        <div class="info-box">
+            <h3>Safety Score</h3>
+            <div class="score-circle" id="safety-score">--</div>
+            <p id="score-description">Loading...</p>
+        </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-     crossorigin=""></script>
+        <div class="info-box">
+            <h3>Safety Tips</h3>
+            <ul id="safety-tips">
+                <li>Loading tips...</li>
+            </ul>
+        </div>
+
+    </div>
     
     <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </body>
