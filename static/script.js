@@ -1,7 +1,82 @@
 // Key for saving history in localStorage
 const SEARCH_HISTORY_KEY = 'weatherwise-history';
 
-// --- All Map variables and functions are removed ---
+// --- NEW: Store API key after asking once ---
+let userApiKey = null; 
+
+/**
+ * --- NEW: Asks for API key if we don't have it ---
+ */
+async function getApiKey() {
+    if (!userApiKey) {
+        userApiKey = prompt("Please enter your OpenWeather API key to fetch the forecast:");
+    }
+    return userApiKey;
+}
+
+/**
+ * --- NEW: Fetches the 5-day forecast ---
+ */
+async function fetchForecast(lat, lon) {
+    const apiKey = await getApiKey();
+    if (!apiKey) {
+        alert("Cannot fetch forecast without an API key.");
+        return;
+    }
+
+    const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
+    
+    try {
+        const response = await fetch(forecastUrl);
+        if (!response.ok) {
+            throw new Error("Could not fetch forecast.");
+        }
+        const data = await response.json();
+        displayForecast(data);
+    } catch (error) {
+        console.error("Error fetching forecast:", error);
+        alert(error.message);
+    }
+}
+
+/**
+ * --- NEW: Processes and displays the 5-day forecast ---
+ */
+function displayForecast(data) {
+    const forecastContainer = document.getElementById('forecast-container');
+    forecastContainer.innerHTML = ''; // Clear old forecast
+    
+    const forecastList = data.list;
+    
+    // Get 5 days, picking the data from 12:00 PM
+    const dailyData = [
+        forecastList[4], // Tomorrow
+        forecastList[12], // Day 2
+        forecastList[20], // Day 3
+        forecastList[28], // Day 4
+        forecastList[36]  // Day 5
+    ];
+
+    const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    dailyData.forEach(day => {
+        if (!day) return; // Skip if data is missing
+        const date = new Date(day.dt * 1000); 
+        const dayName = dayNames[date.getDay()]; 
+        const icon = day.weather[0].icon;
+        const temp = Math.round(day.main.temp);
+
+        const box = document.createElement('div');
+        box.className = 'forecast-item'; // Use 'forecast-item' for new style
+        box.innerHTML = `
+            <h4>${dayName}</h4>
+            <img src="https://openweathermap.org/img/wn/${icon}.png" alt="${day.weather[0].description}">
+            <div class="forecast-temp">${temp}°C</div>
+        `;
+        forecastContainer.appendChild(box);
+    });
+}
+
 
 /**
  * Gets history from localStorage and builds the new dropdown
@@ -94,47 +169,10 @@ function getPm25Details(pm2_5) {
 }
 
 /**
- * --- NEW: Updates the Safety Score and Tips boxes ---
+ * --- NEW: Updates the Safety Tips box ---
  */
 function updateSafetyInfo(data) {
     const { speed, description, pm2_5 } = data;
-    
-    // --- 1. Calculate Safety Score (out of 100) ---
-    let score = 100;
-    let scoreDescription = "Excellent";
-    let scoreColor = "#00E400"; // Good
-    
-    // Penalize for high PM2.5
-    if (pm2_5 > 35.4) { // Moderate
-        score -= 20;
-        scoreDescription = "Moderate";
-        scoreColor = "#FFFF00"; // Moderate
-    }
-    if (pm2_5 > 55.4) { // Unhealthy for Sensitive
-        score -= 15;
-        scoreDescription = "Unhealthy";
-        scoreColor = "#FF7E00"; // Unhealthy (Sensitive)
-    }
-    if (pm2_5 > 150.4) { // Very Unhealthy
-        score -= 30;
-        scoreDescription = "Very Unhealthy";
-        scoreColor = "#FF0000"; // Unhealthy
-    }
-    
-    // Penalize for high wind (e.g., > 30 km/h)
-    if (speed > 30) {
-        score -= 15;
-        if (scoreDescription === "Excellent") scoreDescription = "Windy";
-    }
-    
-    // Penalize for rain/thunderstorm
-    if (description.includes("rain") || description.includes("thunderstorm")) {
-        score -= 10;
-    }
-    
-    if (score < 0) score = 0; // Don't go below 0
-
-    // --- 2. Generate Safety Tips ---
     let tips = [];
     
     // PM2.5 Tips
@@ -165,11 +203,7 @@ function updateSafetyInfo(data) {
         tips.push("💨 High winds! Secure loose items outdoors.");
     }
 
-    // --- 3. Update the HTML ---
-    document.getElementById('safety-score').innerText = Math.round(score);
-    document.getElementById('score-description').innerText = scoreDescription;
-    document.querySelector('.score-circle').style.borderColor = scoreColor;
-    
+    // --- Update the HTML ---
     const tipsList = document.getElementById('safety-tips');
     tipsList.innerHTML = ''; // Clear old tips
     tips.forEach(tip => {
@@ -183,6 +217,7 @@ function updateSafetyInfo(data) {
 let weather = {
     
     fetchWeather : function (city) {
+        // This is your original, safe call to your backend
         fetch("/weather?city=" + encodeURIComponent(city))
             .then((response) => {
                 if (!response.ok) {
@@ -206,7 +241,7 @@ let weather = {
 
     displayWeather: function(data) {
         // We get all data here
-        const { name, icon, description, temp, humidity, speed, pm2_5 } = data;
+        const { name, icon, description, temp, humidity, speed, pm2_5, lat, lon } = data;
         
         // Update the main weather bar
         document.querySelector(".city").innerText = "Weather in " + name;
@@ -224,8 +259,9 @@ let weather = {
 
         document.querySelector(".weather").classList.remove("loading");
         
-        // --- NEW: Call the function to update score and tips ---
-        updateSafetyInfo(data);
+        // --- NEW: Call BOTH functions ---
+        updateSafetyInfo(data); // Update the tips
+        fetchForecast(lat, lon); // Fetch the 5-day forecast
     },
 
     search : function() {
@@ -262,5 +298,3 @@ window.addEventListener('click', function(e) {
 
 // Load default city on startup
 weather.fetchWeather("Delhi");
-
-// --- All map-related 'DOMContentLoaded' listeners are removed ---
