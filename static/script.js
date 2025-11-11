@@ -1,24 +1,7 @@
 // Key for saving history in localStorage
 const SEARCH_HISTORY_KEY = 'weatherwise-history';
 
-// --- Global variables for the map ---
-let map;
-let marker;
-
-/**
- * --- Initializes the map on page load ---
- */
-function initMap() {
-    if (!document.getElementById('map')) return;
-    
-    map = L.map('map').setView([28.6139, 77.2090], 10);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    marker = L.marker([28.6139, 77.2090]).addTo(map);
-}
+// --- All Map variables and functions are removed ---
 
 /**
  * Gets history from localStorage and builds the new dropdown
@@ -110,6 +93,92 @@ function getPm25Details(pm2_5) {
     return { text: text, cssClass: cssClass };
 }
 
+/**
+ * --- NEW: Updates the Safety Score and Tips boxes ---
+ */
+function updateSafetyInfo(data) {
+    const { speed, description, pm2_5 } = data;
+    
+    // --- 1. Calculate Safety Score (out of 100) ---
+    let score = 100;
+    let scoreDescription = "Excellent";
+    let scoreColor = "#00E400"; // Good
+    
+    // Penalize for high PM2.5
+    if (pm2_5 > 35.4) { // Moderate
+        score -= 20;
+        scoreDescription = "Moderate";
+        scoreColor = "#FFFF00"; // Moderate
+    }
+    if (pm2_5 > 55.4) { // Unhealthy for Sensitive
+        score -= 15;
+        scoreDescription = "Unhealthy";
+        scoreColor = "#FF7E00"; // Unhealthy (Sensitive)
+    }
+    if (pm2_5 > 150.4) { // Very Unhealthy
+        score -= 30;
+        scoreDescription = "Very Unhealthy";
+        scoreColor = "#FF0000"; // Unhealthy
+    }
+    
+    // Penalize for high wind (e.g., > 30 km/h)
+    if (speed > 30) {
+        score -= 15;
+        if (scoreDescription === "Excellent") scoreDescription = "Windy";
+    }
+    
+    // Penalize for rain/thunderstorm
+    if (description.includes("rain") || description.includes("thunderstorm")) {
+        score -= 10;
+    }
+    
+    if (score < 0) score = 0; // Don't go below 0
+
+    // --- 2. Generate Safety Tips ---
+    let tips = [];
+    
+    // PM2.5 Tips
+    if (pm2_5 <= 12.0) {
+        tips.push("✔️ Air quality is excellent.");
+    } else if (pm2_5 <= 55.4) {
+        tips.push("⚠️ Air quality is moderate. Sensitive groups should limit outdoor activity.");
+    } else {
+        tips.push("❌ Air quality is poor. Avoid outdoor activity and wear a mask if outside.");
+    }
+    
+    // Weather Description Tips
+    if (description.includes("rain")) {
+        tips.push("☔ It's raining. Don't forget an umbrella!");
+    }
+    if (description.includes("thunderstorm")) {
+        tips.push("⚡ Thunderstorms expected. Stay indoors and avoid electronics.");
+    }
+    if (description.includes("sun") || description.includes("clear")) {
+        tips.push("☀️ Clear skies. A great day to be outside (if AQI is good)!");
+    }
+    if (description.includes("fog") || description.includes("haze") || description.includes("mist")) {
+        tips.push("🌫️ Low visibility. Be careful if driving.");
+    }
+    
+    // Wind Tips
+    if (speed > 30) {
+        tips.push("💨 High winds! Secure loose items outdoors.");
+    }
+
+    // --- 3. Update the HTML ---
+    document.getElementById('safety-score').innerText = Math.round(score);
+    document.getElementById('score-description').innerText = scoreDescription;
+    document.querySelector('.score-circle').style.borderColor = scoreColor;
+    
+    const tipsList = document.getElementById('safety-tips');
+    tipsList.innerHTML = ''; // Clear old tips
+    tips.forEach(tip => {
+        const li = document.createElement('li');
+        li.innerText = tip;
+        tipsList.appendChild(li);
+    });
+}
+
 
 let weather = {
     
@@ -136,8 +205,10 @@ let weather = {
     },
 
     displayWeather: function(data) {
-        const { name, icon, description, temp, humidity, speed, pm2_5, lat, lon } = data;
+        // We get all data here
+        const { name, icon, description, temp, humidity, speed, pm2_5 } = data;
         
+        // Update the main weather bar
         document.querySelector(".city").innerText = "Weather in " + name;
         document.querySelector(".icon").src = "https://openweathermap.org/img/wn/" + icon + ".png";
         document.querySelector(".description").innerText = description;
@@ -148,24 +219,13 @@ let weather = {
         let pm25Element = document.querySelector(".pm25");
         let pm25Details = getPm25Details(pm2_5);
         pm25Element.innerText = `PM2.5: ${pm2_5} μg/m³ (${pm25Details.text})`;
-        
-        // --- THIS IS THE FIX ---
-        // I changed "pm2s" (my typo) to "pm25" (correct)
-        pm25Element.className = "pm25"; 
-        
-        pm25Element.classList.add(pm25Details.cssClass); 
+        pm25Element.className = "pm25"; // Reset classes
+        pm25Element.classList.add(pm25Details.cssClass); // Add new AQI class
 
         document.querySelector(".weather").classList.remove("loading");
         
-        // --- Update the map's position ---
-        if (map && marker) {
-            const newLocation = [lat, lon];
-            map.setView(newLocation, 10); // Move the map
-            marker.setLatLng(newLocation); // Move the marker
-        } else {
-             // If map wasn't ready, init it now (for the first load)
-            initMap();
-        }
+        // --- NEW: Call the function to update score and tips ---
+        updateSafetyInfo(data);
     },
 
     search : function() {
@@ -203,5 +263,4 @@ window.addEventListener('click', function(e) {
 // Load default city on startup
 weather.fetchWeather("Delhi");
 
-// --- Initialize the map when the page is ready ---
-document.addEventListener('DOMContentLoaded', initMap);
+// --- All map-related 'DOMContentLoaded' listeners are removed ---
