@@ -6,7 +6,7 @@ body {
     padding-top: 3em; 
     margin: 0;
     font-family: 'Open Sans', sans-serif;
-    background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1600&q=80');
+    background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto-format&fit-crop&w=1600&q=80');
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -62,20 +62,19 @@ button {
 
 
 input.searchbar {
-    /* --- THESE ARE THE CHANGES --- */
-    border: 1px solid rgba(255, 255, 255, 0.5); /* Was 0.3, now brighter */
-    background: rgba(255, 255, 255, 0.15); /* Reverted from 0.3, now more transparent */
+    /* --- THIS IS THE NEW STYLE --- */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Bright border */
+    background: rgba(0, 0, 0, 0.25); /* "Smoked glass" dark background */
+    box-shadow: none; /* Removed inner shadow for a flat, clean look */
+    /* Glassmorphism (backdrop-filter) is removed */
     
     outline: none;
     padding: 0.4em 1em;
     border-radius: 24px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    color: whitesmoke; 
+    color: whitesmoke; /* White text */
     font-family: inherit;
     font-size: 105%;
     width: 100%; 
-    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.15);
     transition: all 0.3s ease;
 }
 
@@ -160,15 +159,16 @@ h1.temp {
 
 .searchbar:hover {
     transform: scale(1.02);
-    background: rgba(255, 255, 255, 0.2);
-    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.35); /* Darken on hover */
+    box-shadow: none;
 }
 
 
 input.searchbar:focus {
+    /* Inverts to light on focus for clear feedback */
     color: #333; 
-    background: rgba(255, 255, 255, 0.25); 
-    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.25);
+    background: rgba(255, 255, 255, 0.9); 
+    box-shadow: none;
 }
 
 
@@ -184,6 +184,7 @@ input.searchbar:focus::placeholder {
     left: 0;
     width: 100%;
     
+    /* The dropdown itself is still glassmorphic, which contrasts nicely */
     background: rgba(255, 255, 255, 0.15); 
     backdrop-filter: blur(10px) saturate(180%);
     -webkit-backdrop-filter: blur(10px) saturate(180%);
