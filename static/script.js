@@ -11,7 +11,7 @@ let marker;
 function initMap() {
     // Check if map element exists
     if (!document.getElementById('map')) return;
-
+    
     // Start map centered on Delhi
     map = L.map('map').setView([28.6139, 77.2090], 10);
 
@@ -164,7 +164,7 @@ let weather = {
             map.setView(newLocation, 10); // Move the map
             marker.setLatLng(newLocation); // Move the marker
         } else {
-            // If map wasn't ready, init it now (for the first load)
+             // If map wasn't ready, init it now (for the first load)
             initMap();
         }
     },
