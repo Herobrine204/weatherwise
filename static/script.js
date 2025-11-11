@@ -1,12 +1,13 @@
 // Key for saving history in localStorage
 const SEARCH_HISTORY_KEY = 'weatherwise-history';
 
-// --- All API Key prompt code is REMOVED ---
+// --- No API Key prompt needed! ---
 
 /**
  * --- Fetches the 5-day forecast from OUR backend ---
  */
 async function fetchForecast(lat, lon) {
+    // This now calls your own server, which is 100% safe
     const forecastUrl = `/forecast?lat=${lat}&lon=${lon}`;
     
     try {
@@ -23,7 +24,11 @@ async function fetchForecast(lat, lon) {
         displayForecast(data); // Send the full data to be processed
     } catch (error) {
         console.error("Error fetching forecast:", error);
-        alert(error.message);
+        // We won't alert, but we'll show an error in the box
+        const forecastContainer = document.getElementById('forecast-container');
+        forecastContainer.innerHTML = 'Forecast unavailable.';
+        // Still remove loading so the error is visible
+        document.getElementById('forecast-box').classList.remove('loading');
     }
 }
 
@@ -37,6 +42,7 @@ function displayForecast(data) {
     const forecastList = data.list;
     if (!forecastList) {
         forecastContainer.innerText = "Forecast data is unavailable.";
+        document.getElementById('forecast-box').classList.remove('loading');
         return;
     }
     
@@ -67,7 +73,7 @@ function displayForecast(data) {
         forecastContainer.appendChild(box);
     });
 
-    // --- NEW: Remove loading class to trigger animation ---
+    // --- Remove loading class to trigger animation ---
     document.getElementById('forecast-box').classList.remove('loading');
 }
 
@@ -206,7 +212,7 @@ function updateSafetyInfo(data) {
         tipsList.appendChild(li);
     });
 
-    // --- NEW: Remove loading class to trigger animation ---
+    // --- Remove loading class to trigger animation ---
     document.getElementById('tips-box').classList.remove('loading');
 }
 
@@ -214,7 +220,6 @@ function updateSafetyInfo(data) {
 let weather = {
     
     fetchWeather : function (city) {
-        // This is your original, safe call to your backend
         fetch("/weather?city=" + encodeURIComponent(city))
             .then((response) => {
                 if (!response.ok) {
@@ -261,7 +266,7 @@ let weather = {
     },
 
     search : function() {
-        // --- NEW: Add loading class back before searching ---
+        // --- Add loading class back before searching ---
         document.getElementById('tips-box').classList.add('loading');
         document.getElementById('forecast-box').classList.add('loading');
         
@@ -289,8 +294,10 @@ document.querySelector('.searchbar').addEventListener('focus', () => {
     populateHistoryDropdown();
 });
 
+// --- THIS IS THE BUG FIX ---
 window.addEventListener('click', function(e) {
     const searchContainer = document.querySelector('.search');
+    // 'e.targe' is now 'e.target'
     if (searchContainer && !searchContainer.contains(e.target)) {
         hideHistoryDropdown();
     }
