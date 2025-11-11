@@ -178,26 +178,33 @@ input.searchbar:focus::placeholder {
 
 
 /* --- STYLES FOR CUSTOM GLASSMORPHIC DROPDOWN --- */
+/* --- NEW DROPDOWN STYLE TO MATCH IMAGE --- */
 .history-dropdown {
     position: absolute;
     top: calc(100% + 5px); /* Position it just below the search bar */
     left: 0;
     width: 100%;
     
-    /* The dropdown itself is still glassmorphic, which contrasts nicely */
-    background: rgba(255, 255, 255, 0.15); 
-    backdrop-filter: blur(10px) saturate(180%);
-    -webkit-backdrop-filter: blur(10px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    /* Match the main card's glass for a seamless look */
+    background: rgba(255, 255, 255, 0.08); 
+    backdrop-filter: blur(16px) saturate(180%); 
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
     
-    border-radius: 20px; /* Match the search bar */
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    /* Remove border and shadow */
+    border: none;
+    box-shadow: none; 
+    
+    /* Round the bottom corners only to look attached */
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    
     padding: 0.5em 0;
     z-index: 10;
     
-    max-height: 200px; 
+    max-height: 200px; /* In case history gets long */
     overflow-y: auto;
     
+    /* Hide it by default */
     display: none; 
 }
 
