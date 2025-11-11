@@ -140,7 +140,6 @@ let weather = {
     },
 
     displayWeather: function(data) {
-        // --- UPDATED: Get lat and lon from data ---
         const { name, icon, description, temp, humidity, speed, pm2_5, lat, lon } = data;
         
         document.querySelector(".city").innerText = "Weather in " + name;
@@ -153,8 +152,12 @@ let weather = {
         let pm25Element = document.querySelector(".pm25");
         let pm25Details = getPm25Details(pm2_5);
         pm25Element.innerText = `PM2.5: ${pm2_5} μg/m³ (${pm25Details.text})`;
-        pm25Element.className = "pm25"; // Reset classes
-        pm25Element.classList.add(pm25Details.cssClass); // Add new AQI class
+        
+        // --- THIS IS THE FIX ---
+        // It was "pm2s" before, which caused a crash on the next search
+        pm25Element.className = "pm25"; 
+        
+        pm25Element.classList.add(pm25Details.cssClass); 
 
         document.querySelector(".weather").classList.remove("loading");
         
