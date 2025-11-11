@@ -284,7 +284,9 @@ document.querySelector('.searchbar').addEventListener('focus', () => {
 
 window.addEventListener('click', function(e) {
     const searchContainer = document.querySelector('.search');
-    if (searchContainer && !searchContainer.contains(e.targe)) {
+    // --- THIS IS THE FIX ---
+    // Was 'e.targe', now 'e.target'
+    if (searchContainer && !searchContainer.contains(e.target)) {
         hideHistoryDropdown();
     }
 });
