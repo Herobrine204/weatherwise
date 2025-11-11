@@ -1,13 +1,13 @@
 body {
     display: flex;
-    /* --- Stack bar and info boxes vertically --- */
     flex-direction: column;
     justify-content: flex-start;
-    align-items: center; /* Center horizontally */
+    align-items: center; 
     
     height: 100%; 
     min-height: 100vh; 
-    padding-top: 3em; 
+    /* Changed padding to leave space for the new logo */
+    padding-top: 6em; 
     margin: 0;
     font-family: 'Open Sans', sans-serif;
     background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto-format&fit-crop&w=1600&q=80');
@@ -17,6 +17,29 @@ body {
     background-attachment: fixed;
     font-size: 100%;
 }
+
+/* --- NEW: LOGO HEADER STYLE --- */
+.logo-header {
+    position: absolute;
+    top: 1.5em;
+    left: 2em;
+    display: flex;
+    align-items: center;
+    color: whitesmoke;
+    z-index: 100; /* Stay on top */
+}
+
+.logo-header img {
+    width: 40px;
+    height: 40px;
+    margin-right: 0.75em;
+}
+
+.logo-header span {
+    font-size: 1.5em;
+    font-weight: 600;
+}
+/* --- END OF LOGO STYLE --- */
 
 
 .card {
@@ -49,7 +72,6 @@ body {
 }
 
 .info-box {
-    /* Glassmorphism */
     background: rgba(255, 255, 255, 0.08); 
     backdrop-filter: blur(16px) saturate(180%); 
     -webkit-backdrop-filter: blur(16px) saturate(180%);
@@ -59,8 +81,22 @@ body {
     color: whitesmoke;
     padding: 1.5em 2em;
     border-radius: 30px;
-    flex-basis: 50%; /* Each box takes half the space */
+    flex-basis: 50%; 
+    
+    /* --- NEW: Animation --- */
+    transition: all 0.5s ease-out;
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
 }
+
+/* --- NEW: 'loading' state for info boxes --- */
+.info-box.loading {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
 
 .info-box h3 {
     margin-top: 0;
@@ -82,14 +118,12 @@ body {
     margin-bottom: 0.8em;
 }
 
-/* Container for the 5-day items */
 .forecast-container {
     display: flex;
     justify-content: space-between;
     gap: 1em;
 }
 
-/* Individual forecast item */
 .forecast-item {
     display: flex;
     flex-direction: column;
@@ -98,13 +132,13 @@ body {
     flex-grow: 1;
 }
 
-.forecast-item h4 { /* Day of the week */
+.forecast-item h4 { 
     margin: 0 0 0.5em 0;
     font-weight: 600;
     font-size: 0.9em;
 }
 
-.forecast-item img { /* Weather icon */
+.forecast-item img { 
     width: 50px;
     height: 50px;
     margin: 0;
@@ -171,7 +205,6 @@ button:hover {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* Your original bar layout */
 .weather {
     display: flex;
     flex-wrap: wrap; 
@@ -311,18 +344,27 @@ input.searchbar:focus::placeholder {
     color: #7E0023;
 }
 
-/* --- NEW: FOOTER STYLE --- */
+/* --- FOOTER STYLE --- */
 footer {
     text-align: center;
-    color: rgba(245, 245, 245, 0.7); /* A bit softer white */
+    color: rgba(245, 245, 245, 0.7); 
     padding: 1em 0 2em 0;
     font-size: 0.9em;
+    /* Make sure it's at the bottom */
+    margin-top: auto;
 }
 
 
 @media screen and (max-width: 950px) {
+    /* --- NEW: Adjust logo for mobile --- */
+    .logo-header {
+        top: 1em;
+        left: 1.5em;
+    }
+    
     body {
-        padding-top: 1.5em;
+        /* Re-adjust padding for logo */
+        padding-top: 5em;
     }
 
     .card {
@@ -332,7 +374,6 @@ footer {
         border-radius: 30px; 
     }
 
-    /* --- Stack info boxes on mobile --- */
     .info-container {
         flex-direction: column;
         margin-left: 0.5em;
@@ -342,7 +383,7 @@ footer {
     }
 
     .forecast-container {
-        gap: 0.5em; /* Tighter spacing on mobile */
+        gap: 0.5em; 
     }
     
     .forecast-item h4 {
@@ -356,7 +397,6 @@ footer {
         font-size: 1em;
     }
     
-    /* Your original mobile layout for the bar */
     .weather {
         flex-direction: column;
         align-items: center;
