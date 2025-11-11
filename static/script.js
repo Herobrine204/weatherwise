@@ -1,3 +1,47 @@
+// --- NEW: Key for saving history in localStorage ---
+const SEARCH_HISTORY_KEY = 'weatherwise-history';
+
+/**
+ * --- NEW: Loads search history from localStorage into the datalist. ---
+ */
+function loadSearchHistory() {
+    const history = JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY)) || [];
+    const datalist = document.getElementById('search-history');
+    
+    if (datalist) {
+        datalist.innerHTML = ''; // Clear old options
+        history.forEach(city => {
+            const option = document.createElement('option');
+            option.value = city;
+            datalist.appendChild(option);
+        });
+    }
+}
+
+/**
+ * --- NEW: Saves a new city to the search history in localStorage. ---
+ */
+function saveSearch(city) {
+    if (!city || city.trim() === "") return; // Don't save empty searches
+
+    let history = JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY)) || [];
+    
+    // Remove city if it already exists (so we can move it to the front)
+    const existingIndex = history.indexOf(city);
+    if (existingIndex > -1) {
+        history.splice(existingIndex, 1);
+    }
+
+    // Add the new city to the front of the list
+    history.unshift(city);
+
+    // Keep only the 10 most recent searches
+    history = history.slice(0, 10);
+
+    // Save the updated list back to localStorage
+    localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
+}
+
 /**
  * A helper function to get the air quality details
  * based on the PM2.5 value.
@@ -84,7 +128,11 @@ let weather = {
     },
 
     search : function() {
-        this.fetchWeather(document.querySelector(".searchbar").value);
+        // --- UPDATED THIS FUNCTION ---
+        const city = document.querySelector(".searchbar").value;
+        this.fetchWeather(city); // Fetch the weather
+        saveSearch(city); // Save the search to history
+        loadSearchHistory(); // Update the datalist so it's visible next time
     }
 };
 
@@ -100,3 +148,7 @@ document.querySelector(".searchbar").addEventListener("keyup", function(event){
 
 // Load default city on startup
 weather.fetchWeather("Delhi");
+
+// --- NEW: Load history from localStorage when the page first loads ---
+// We use DOMContentLoaded to make sure the HTML elements are ready
+document.addEventListener('DOMContentLoaded', loadSearchHistory);
