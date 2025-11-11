@@ -1,18 +1,11 @@
 body {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* Changed from 'center' to move card up */
     height: 100vh;
+    padding-top: 5em; /* Added padding to give space from the top */
     margin: 0;
     font-family: 'Open Sans', sans-serif;
-    
-    /* background-image: url('https://images.unsplash.com/photo-1483347756197-71ef80e95f73?auto=format&fit=crop&w=1600&q=80'); */
-    
-    /* Option 3: Forest Sunrise */
-    /* background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1600&q=80'); */
-    
-    /* Option 4: Ocean Sunset */
-    /* background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80'); */
     
     /* Option 5: Misty Mountains */
     background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1600&q=80');
@@ -26,23 +19,23 @@ body {
 
 
 .card {
-    /* --- ENHANCED GLASSMORPHISM EFFECT --- */
-    background: rgba(255, 255, 255, 0.08); /* More translucent white tint */
-    backdrop-filter: blur(16px) saturate(180%); /* Stronger blur + color boost */
-    -webkit-backdrop-filter: blur(16px) saturate(180%); /* Safari support */
+    /* --- ENHANCED GLASSMORPHISM EFFECT (Unchanged) --- */
+    background: rgba(255, 255, 255, 0.08); 
+    backdrop-filter: blur(16px) saturate(180%); 
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
     
-    border: 1px solid rgba(255, 255, 255, 0.25); /* Brighter border for glass edge */
-    border-top: 1px solid rgba(255, 255, 255, 0.4); /* Top highlight */
-    border-left: 1px solid rgba(255, 255, 255, 0.3); /* Left highlight */
+    border: 1px solid rgba(255, 255, 255, 0.25); 
+    border-top: 1px solid rgba(255, 255, 255, 0.4); 
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
     
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), /* Deep shadow */
-                inset 0 1px 0 rgba(255, 255, 255, 0.2); /* Inner glow */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.2); 
 
     color: whitesmoke;
     padding: 2em;
     border-radius: 30px;
     width: 100%;
-    max-width: 420px;
+    max-width: 700px; /* --- Changed from 420px to make it rectangular --- */
     margin: 1em;
     transition: all 0.3s ease;
 }
@@ -106,7 +99,7 @@ button:hover {
 
 h1.temp {
     margin: 0;
-    margin-bottom: 0.4em;
+    margin-bottom: 0.2em; /* Adjusted margin for new layout */
 }
 
 
@@ -179,4 +172,34 @@ h1.temp {
 }
 .aqi-hazardous {
     color: #7E0023;
+}
+
+
+/* --- NEW STYLES FOR RECTANGULAR LAYOUT --- */
+
+.city {
+    text-align: center; /* Center the city name */
+}
+
+/* New flex container for the two columns */
+.weather-body {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 1.5em;
+}
+
+/* Column 1: Main temp and icon */
+.weather-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Column 2: Humidity, Wind, PM2.5 */
+.weather-details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8em; /* Adds nice spacing between detail lines */
 }
