@@ -1,4 +1,4 @@
-    body {
+body {
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -62,11 +62,9 @@ button {
 
 
 input.searchbar {
-    /* --- THIS IS THE NEW STYLE --- */
-    border: 1px solid rgba(255, 255, 255, 0.3); /* Bright border */
+    border: 1px solid rgba(255, 255, 255, 0.3); 
     background: rgba(0, 0, 0, 0.25); /* "Smoked glass" dark background */
     box-shadow: none; /* Removed inner shadow for a flat, clean look */
-    /* Glassmorphism (backdrop-filter) is removed */
     
     outline: none;
     padding: 0.4em 1em;
@@ -177,27 +175,24 @@ input.searchbar:focus::placeholder {
 }
 
 
-/* --- STYLES FOR CUSTOM GLASSMORPHIC DROPDOWN --- */
-/* --- NEW DROPDOWN STYLE TO MATCH IMAGE --- */
+/* --- THIS IS THE FIX --- */
+/* Solid, dark background for high visibility */
 .history-dropdown {
     position: absolute;
     top: calc(100% + 5px); /* Position it just below the search bar */
     left: 0;
     width: 100%;
     
-    /* Match the main card's glass for a seamless look */
-    background: rgba(255, 255, 255, 0.08); 
-    backdrop-filter: blur(16px) saturate(180%); 
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    /* Solid, dark background for high visibility */
+    background: rgba(0, 0, 0, 0.7); 
     
-    /* Remove border and shadow */
-    border: none;
-    box-shadow: none; 
+    /* Removed all glassmorphism */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Simple border */
     
-    /* Round the bottom corners only to look attached */
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-    
+    border-radius: 20px; /* Match the search bar */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     padding: 0.5em 0;
     z-index: 10;
     
@@ -216,17 +211,17 @@ input.searchbar:focus::placeholder {
 /* Style for each item in the dropdown */
 .history-item {
     padding: 0.75em 1.5em;
-    color: whitesmoke; 
+    color: whitesmoke; /* Visible white text */
     cursor: pointer;
     font-size: 0.9em;
     transition: background 0.2s ease;
 }
 
-/* Hover effect for items */
+/* Hover effect for items on dark background */
 .history-item:hover {
     background: rgba(255, 255, 255, 0.1);
 }
-/* --- END OF NEW STYLES --- */
+/* --- END OF FIX --- */
 
 
 .aqi-good {
