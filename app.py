@@ -44,6 +44,8 @@ def get_weather():
             "humidity": weather_data['main']['humidity'],
             "speed": weather_data['wind']['speed'],
             "pm2_5": aqi_data['list'][0]['components']['pm2_5'],
+            
+            # --- THIS IS THE CRITICAL ADDITION ---
             "lat": lat,
             "lon": lon
         }
@@ -60,7 +62,7 @@ def get_weather():
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {e}"}), 500
 
-# --- NEW: SECURE FORECAST ENDPOINT ---
+# --- THIS IS THE NEW SECURE FORECAST ENDPOINT ---
 @app.route('/forecast')
 def get_forecast():
     lat = request.args.get('lat')
