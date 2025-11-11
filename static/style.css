@@ -6,7 +6,7 @@ body {
     padding-top: 3em; 
     margin: 0;
     font-family: 'Open Sans', sans-serif;
-    background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto-format&fit=crop&w=1600&q=80');
+    background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1600&q=80');
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -62,14 +62,13 @@ button {
 
 
 input.searchbar {
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    /* --- THESE ARE THE CHANGES --- */
+    border: 1px solid rgba(255, 255, 255, 0.5); /* Was 0.3, now brighter */
+    background: rgba(255, 255, 255, 0.15); /* Reverted from 0.3, now more transparent */
+    
     outline: none;
     padding: 0.4em 1em;
     border-radius: 24px;
-    
-    /* --- THIS IS THE CHANGED LINE --- */
-    background: rgba(255, 255, 255, 10); /* Was 0.15, now 0.3 */
-    
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     color: whitesmoke; 
@@ -178,15 +177,14 @@ input.searchbar:focus::placeholder {
 }
 
 
-/* --- NEW: STYLES FOR CUSTOM GLASSMORPHIC DROPDOWN --- */
+/* --- STYLES FOR CUSTOM GLASSMORPHIC DROPDOWN --- */
 .history-dropdown {
     position: absolute;
     top: calc(100% + 5px); /* Position it just below the search bar */
     left: 0;
     width: 100%;
     
-    /* This is the 30% glassmorphism you wanted */
-    background: rgba(255, 255, 255, 0.15); /* 15-20% is a good start */
+    background: rgba(255, 255, 255, 0.15); 
     backdrop-filter: blur(10px) saturate(180%);
     -webkit-backdrop-filter: blur(10px) saturate(180%);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -196,10 +194,9 @@ input.searchbar:focus::placeholder {
     padding: 0.5em 0;
     z-index: 10;
     
-    max-height: 200px; /* In case history gets long */
+    max-height: 200px; 
     overflow-y: auto;
     
-    /* Hide it by default */
     display: none; 
 }
 
@@ -211,7 +208,7 @@ input.searchbar:focus::placeholder {
 /* Style for each item in the dropdown */
 .history-item {
     padding: 0.75em 1.5em;
-    color: whitesmoke; /* Visible white text */
+    color: whitesmoke; 
     cursor: pointer;
     font-size: 0.9em;
     transition: background 0.2s ease;
@@ -266,7 +263,6 @@ input.searchbar:focus::placeholder {
         margin-bottom: 1em;
     }
 
-    /* Make sure dropdown items are full width on mobile */
     .history-item {
         padding: 0.75em 1em;
     }
