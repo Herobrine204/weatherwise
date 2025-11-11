@@ -1,8 +1,12 @@
 body {
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    height: 100vh;
+    /* --- NEW: Stack items vertically --- */
+    flex-direction: column;
+    justify-content: flex-start; /* Was center */
+    align-items: center; /* Center horizontally */
+    
+    height: 100%; /* Was 100vh */
+    min-height: 100vh; /* Make sure it's at least full height */
     padding-top: 3em; 
     margin: 0;
     font-family: 'Open Sans', sans-serif;
@@ -31,6 +35,19 @@ body {
     max-width: 1200px; 
     margin: 1em;
     transition: all 0.3s ease;
+    
+    /* --- NEW: Make sure card doesn't shrink --- */
+    flex-shrink: 0;
+}
+
+/* --- ADD THIS NEW STYLE FOR THE MAP BOX --- */
+#map {
+    width: 100%;
+    max-width: 1200px;
+    height: 450px;
+    border-radius: 30px;
+    margin-bottom: 3em;
+    z-index: 5; /* Lower than dropdown */
 }
 
 
@@ -39,7 +56,7 @@ body {
     align-items: center;
     justify-content: center;
     margin: 0 0 1em 0; 
-    position: relative; /* Needed to position the dropdown */
+    position: relative; 
 }
 
 
@@ -63,13 +80,13 @@ button {
 
 input.searchbar {
     border: 1px solid rgba(255, 255, 255, 0.3); 
-    background: rgba(0, 0, 0, 0.25); /* "Smoked glass" dark background */
-    box-shadow: none; /* Removed inner shadow for a flat, clean look */
+    background: rgba(0, 0, 0, 0.25); 
+    box-shadow: none; 
     
     outline: none;
     padding: 0.4em 1em;
     border-radius: 24px;
-    color: whitesmoke; /* White text */
+    color: whitesmoke; 
     font-family: inherit;
     font-size: 105%;
     width: 100%; 
@@ -89,23 +106,13 @@ button:hover {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* --- NEW: Main 2-column wrapper --- */
-.card-body {
-    display: flex;
-    flex-wrap: nowrap; /* Keep weather and map side-by-side */
-    justify-content: space-between;
-    align-items: center;
-    gap: 2em;
-}
-
-/* --- UPDATED: Weather is now a column --- */
+/* This is your original bar layout */
 .weather {
     display: flex;
-    flex-direction: column; /* Stack weather info vertically */
-    align-items: flex-start; /* Align left */
-    flex-basis: 50%; /* Take up half the space */
-    flex-shrink: 0;
-    gap: 0.5em; /* Space out items */
+    flex-wrap: wrap; 
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5em; 
 }
 
 h1.temp {
@@ -156,14 +163,6 @@ h1.temp {
     left: 20px;
 }
 
-/* --- NEW: Map style --- */
-#map {
-    flex-basis: 50%; /* Take up the other half */
-    height: 250px; /* Adjust height to fit your bar */
-    border-radius: 25px; /* Round corners to fit */
-    z-index: 5;
-}
-
 
 .card:hover {
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4),
@@ -175,13 +174,12 @@ h1.temp {
 
 .searchbar:hover {
     transform: scale(1.02);
-    background: rgba(0, 0, 0, 0.35); /* Darken on hover */
+    background: rgba(0, 0, 0, 0.35); 
     box-shadow: none;
 }
 
 
 input.searchbar:focus {
-    /* Inverts to light on focus for clear feedback */
     color: #333; 
     background: rgba(255, 255, 255, 0.9); 
     box-shadow: none;
@@ -193,7 +191,7 @@ input.searchbar:focus::placeholder {
 }
 
 
-/* --- Solid, dark background for high visibility --- */
+/* Solid, dark background for high visibility */
 .history-dropdown {
     position: absolute;
     top: calc(100% + 5px); 
@@ -232,7 +230,6 @@ input.searchbar:focus::placeholder {
 .history-item:hover {
     background: rgba(255, 255, 255, 0.1);
 }
-/* --- END OF FIX --- */
 
 
 .aqi-good {
@@ -255,7 +252,6 @@ input.searchbar:focus::placeholder {
 }
 
 
-/* --- UPDATED: Responsive behavior --- */
 @media screen and (max-width: 950px) {
     body {
         padding-top: 1.5em;
@@ -268,23 +264,20 @@ input.searchbar:focus::placeholder {
         border-radius: 30px; 
     }
 
-    /* --- NEW: Stack map and weather on mobile --- */
-    .card-body {
-        flex-direction: column; /* Stack on top of each other */
-        gap: 1.5em;
-    }
-
-    .weather {
-        flex-basis: 100%; /* Take full width */
-        align-items: center; /* Center on mobile */
-    }
-
+    /* --- ADD THIS TO MAKE MAP SMALLER ON MOBILE --- */
     #map {
-        flex-basis: 100%; /* Take full width */
-        width: 100%;
-        height: 300px;
+        height: 350px;
+        margin-left: 0.5em;
+        margin-right: 0.5em;
+        width: calc(100% - 1em); /* Full width minus margins */
     }
-    /* --- End of stacking logic --- */
+
+    /* This is your original mobile layout for the bar */
+    .weather {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.8em;
+    }
     
     .search {
         margin-bottom: 1em;
