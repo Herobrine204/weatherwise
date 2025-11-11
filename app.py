@@ -44,8 +44,6 @@ def get_weather():
             "humidity": weather_data['main']['humidity'],
             "speed": weather_data['wind']['speed'],
             "pm2_5": aqi_data['list'][0]['components']['pm2_5'],
-            
-            # --- These are the added lines for the map ---
             "lat": lat,
             "lon": lon
         }
@@ -59,6 +57,30 @@ def get_weather():
         if status_code == 401:
             return jsonify({"error": "API key not authorized."}), 401
         return jsonify({"error": f"HTTP Error: {errh}"}), status_code
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {e}"}), 500
+
+# --- NEW: SECURE FORECAST ENDPOINT ---
+@app.route('/forecast')
+def get_forecast():
+    lat = request.args.get('lat')
+    lon = request.args.get('lon')
+    
+    if not lat or not lon:
+        return jsonify({"error": "Lat/Lon parameters are required"}), 400
+    if not API_KEY:
+        return jsonify({"error": "API key is not configured on the server"}), 500
+    
+    try:
+        forecast_url = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&units=metric&appid={API_KEY}"
+        forecast_response = requests.get(forecast_url)
+        forecast_response.raise_for_status()
+        forecast_data = forecast_response.json()
+        
+        return jsonify(forecast_data)
+        
+    except requests.exceptions.HTTPError as errh:
+        return jsonify({"error": f"HTTP Error: {errh}"}), errh.response.status_code
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {e}"}), 500
 
