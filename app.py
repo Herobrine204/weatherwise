@@ -43,9 +43,11 @@ def get_weather():
             "temp": weather_data['main']['temp'],
             "humidity": weather_data['main']['humidity'],
             "speed": weather_data['wind']['speed'],
+            "pm2_5": aqi_data['list'][0]['components']['pm2_5'],
             
-            # Send the pm2_5 value
-            "pm2_5": aqi_data['list'][0]['components']['pm2_5']
+            # --- These are the added lines for the map ---
+            "lat": lat,
+            "lon": lon
         }
 
         return jsonify(combined_data)
