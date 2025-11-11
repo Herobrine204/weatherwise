@@ -1,8 +1,31 @@
 // Key for saving history in localStorage
 const SEARCH_HISTORY_KEY = 'weatherwise-history';
 
+// --- NEW: Global variables for the map ---
+let map;
+let marker;
+
 /**
- * --- NEW: Gets history from localStorage and builds the new dropdown ---
+ * --- NEW: Initializes the map on page load ---
+ */
+function initMap() {
+    // Check if map element exists
+    if (!document.getElementById('map')) return;
+
+    // Start map centered on Delhi
+    map = L.map('map').setView([28.6139, 77.2090], 10);
+
+    // Add a free map "tile layer" from OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Add a marker that we can move later
+    marker = L.marker([28.6139, 77.2090]).addTo(map);
+}
+
+/**
+ * Gets history from localStorage and builds the new dropdown
  */
 function populateHistoryDropdown() {
     const history = JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY)) || [];
@@ -13,7 +36,6 @@ function populateHistoryDropdown() {
     dropdown.innerHTML = ''; // Clear old items
 
     if (history.length === 0) {
-        // Optional: Show a message if history is empty
         dropdown.innerHTML = '<div class="history-item" style="cursor:default;">No recent searches</div>';
     } else {
         history.forEach(city => {
@@ -21,22 +43,20 @@ function populateHistoryDropdown() {
             item.className = 'history-item';
             item.textContent = city;
             
-            // --- NEW: Add click event to each history item ---
             item.addEventListener('click', () => {
-                document.querySelector('.searchbar').value = city; // Set search bar value
-                weather.search(); // Run the search
-                hideHistoryDropdown(); // Hide dropdown after clicking
+                document.querySelector('.searchbar').value = city;
+                weather.search(); 
+                hideHistoryDropdown(); 
             });
             dropdown.appendChild(item);
         });
     }
 
-    // Show the dropdown
     dropdown.classList.add('visible');
 }
 
 /**
- * --- NEW: Hides the custom dropdown ---
+ * Hides the custom dropdown
  */
 function hideHistoryDropdown() {
     const dropdown = document.getElementById('history-dropdown');
@@ -49,23 +69,17 @@ function hideHistoryDropdown() {
  * Saves a new city to the search history in localStorage.
  */
 function saveSearch(city) {
-    if (!city || city.trim() === "") return; // Don't save empty searches
+    if (!city || city.trim() === "") return; 
 
     let history = JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY)) || [];
     
-    // Remove city if it already exists (so we can move it to the front)
     const existingIndex = history.map(c => c.toLowerCase()).indexOf(city.toLowerCase());
     if (existingIndex > -1) {
         history.splice(existingIndex, 1);
     }
 
-    // Add the new city to the front of the list
     history.unshift(city);
-
-    // Keep only the 10 most recent searches
     history = history.slice(0, 10);
-
-    // Save the updated list back to localStorage
     localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
 }
 
@@ -77,7 +91,6 @@ function getPm25Details(pm2_5) {
     let text = "";
     let cssClass = "";
 
-    // These breakpoints are based on the standard US AQI
     if (pm2_5 <= 12.0) {
         text = "Good";
         cssClass = "aqi-good";
@@ -98,7 +111,6 @@ function getPm25Details(pm2_5) {
         cssClass = "aqi-hazardous";
     }
 
-    // Return both values as an object
     return { text: text, cssClass: cssClass };
 }
 
@@ -106,7 +118,6 @@ function getPm25Details(pm2_5) {
 let weather = {
     
     fetchWeather : function (city) {
-        // Fetch from our own Flask backend endpoint
         fetch("/weather?city=" + encodeURIComponent(city))
             .then((response) => {
                 if (!response.ok) {
@@ -116,7 +127,6 @@ let weather = {
             })
             .then((data) => {
                 if (data.error) {
-                    // Handle errors sent from our server
                     alert(data.error);
                     document.querySelector(".weather").classList.add("loading");
                 } else {
@@ -130,7 +140,8 @@ let weather = {
     },
 
     displayWeather: function(data) {
-        const { name, icon, description, temp, humidity, speed, pm2_5 } = data;
+        // --- UPDATED: Get lat and lon from data ---
+        const { name, icon, description, temp, humidity, speed, pm2_5, lat, lon } = data;
         
         document.querySelector(".city").innerText = "Weather in " + name;
         document.querySelector(".icon").src = "https://openweathermap.org/img/wn/" + icon + ".png";
@@ -139,29 +150,33 @@ let weather = {
         document.querySelector(".humidity").innerText = "Humidity: " + humidity + "%";
         document.querySelector(".wind").innerText = "Wind speed: " + speed + " km/h";
         
-        // --- PM2.5 SECTION ---
         let pm25Element = document.querySelector(".pm25");
         let pm25Details = getPm25Details(pm2_5);
         pm25Element.innerText = `PM2.5: ${pm2_5} μg/m³ (${pm25Details.text})`;
-        pm25Element.className = "pm25"; 
-        pm25Element.classList.add(pm25Details.cssClass);
-        // --- END OF PM2.5 SECTION ---
+        pm25Element.className = "pm25"; // Reset classes
+        pm25Element.classList.add(pm25Details.cssClass); // Add new AQI class
 
         document.querySelector(".weather").classList.remove("loading");
         
-        // --- THIS LINE IS COMMENTED OUT ---
-        // document.body.style.backgroundImage = "url('https://source.unsplash.com/1600x900/?" + name + "')"
+        // --- NEW: Update the map's position ---
+        if (map && marker) {
+            const newLocation = [lat, lon];
+            map.setView(newLocation, 10); // Move the map
+            marker.setLatLng(newLocation); // Move the marker
+        } else {
+            // If map wasn't ready, init it now (for the first load)
+            initMap();
+        }
     },
 
     search : function() {
-        // --- UPDATED THIS FUNCTION ---
         const searchInput = document.querySelector(".searchbar");
         const city = searchInput.value;
         
-        this.fetchWeather(city); // Fetch the weather
-        saveSearch(city); // Save the search to history
-        hideHistoryDropdown(); // Hide dropdown after searching
-        searchInput.blur(); // Un-focus the search bar
+        this.fetchWeather(city);
+        saveSearch(city); 
+        hideHistoryDropdown(); 
+        searchInput.blur(); 
     }
 };
 
@@ -175,15 +190,12 @@ document.querySelector(".searchbar").addEventListener("keyup", function(event){
     }
 });
 
-// --- NEW: Show dropdown on focus ---
 document.querySelector('.searchbar').addEventListener('focus', () => {
     populateHistoryDropdown();
 });
 
-// --- NEW: Hide dropdown when clicking outside ---
 window.addEventListener('click', function(e) {
     const searchContainer = document.querySelector('.search');
-    // If the click is outside the .search container, hide the dropdown
     if (searchContainer && !searchContainer.contains(e.target)) {
         hideHistoryDropdown();
     }
@@ -192,5 +204,5 @@ window.addEventListener('click', function(e) {
 // Load default city on startup
 weather.fetchWeather("Delhi");
 
-// --- REMOVED: Old DOMContentLoaded listener ---
-// (No longer needed, as we populate the list on focus)
+// --- NEW: Initialize the map when the page is ready ---
+document.addEventListener('DOMContentLoaded', initMap);
