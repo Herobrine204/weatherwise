@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>WeatherWise</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/favicon.png') }}">
@@ -36,17 +36,17 @@
 
     <div class="info-container">
         
-        <div class="info-box">
-            <h3>Safety Score</h3>
-            <div class="score-circle" id="safety-score">--</div>
-            <p id="score-description">Loading...</p>
-        </div>
-
-        <div class="info-box">
+        <div class="info-box" id="tips-box">
             <h3>Safety Tips</h3>
             <ul id="safety-tips">
                 <li>Loading tips...</li>
             </ul>
+        </div>
+
+        <div class="info-box" id="forecast-box">
+            <h3>5-Day Forecast</h3>
+            <div class="forecast-container" id="forecast-container">
+                </div>
         </div>
 
     </div>
