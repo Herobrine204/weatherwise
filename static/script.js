@@ -1,30 +1,14 @@
 // Key for saving history in localStorage
 const SEARCH_HISTORY_KEY = 'weatherwise-history';
 
-// --- NEW: Store API key after asking once ---
-let userApiKey = null; 
+// --- All API Key prompt code is REMOVED ---
 
 /**
- * --- NEW: Asks for API key if we don't have it ---
- */
-async function getApiKey() {
-    if (!userApiKey) {
-        userApiKey = prompt("Please enter your OpenWeather API key to fetch the forecast:");
-    }
-    return userApiKey;
-}
-
-/**
- * --- NEW: Fetches the 5-day forecast ---
+ * --- NEW: Fetches the 5-day forecast from OUR backend ---
  */
 async function fetchForecast(lat, lon) {
-    const apiKey = await getApiKey();
-    if (!apiKey) {
-        alert("Cannot fetch forecast without an API key.");
-        return;
-    }
-
-    const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
+    // This now calls your own server, which is 100% safe
+    const forecastUrl = `/forecast?lat=${lat}&lon=${lon}`;
     
     try {
         const response = await fetch(forecastUrl);
@@ -32,7 +16,12 @@ async function fetchForecast(lat, lon) {
             throw new Error("Could not fetch forecast.");
         }
         const data = await response.json();
-        displayForecast(data);
+        
+        if (data.error) {
+            throw new Error(`Forecast error: ${data.error}`);
+        }
+        
+        displayForecast(data); // Send the full data to be processed
     } catch (error) {
         console.error("Error fetching forecast:", error);
         alert(error.message);
@@ -47,6 +36,10 @@ function displayForecast(data) {
     forecastContainer.innerHTML = ''; // Clear old forecast
     
     const forecastList = data.list;
+    if (!forecastList) {
+        forecastContainer.innerText = "Forecast data is unavailable.";
+        return;
+    }
     
     // Get 5 days, picking the data from 12:00 PM
     const dailyData = [
@@ -259,7 +252,7 @@ let weather = {
 
         document.querySelector(".weather").classList.remove("loading");
         
-        // --- NEW: Call BOTH functions ---
+        // --- Call BOTH functions ---
         updateSafetyInfo(data); // Update the tips
         fetchForecast(lat, lon); // Fetch the 5-day forecast
     },
@@ -291,7 +284,7 @@ document.querySelector('.searchbar').addEventListener('focus', () => {
 
 window.addEventListener('click', function(e) {
     const searchContainer = document.querySelector('.search');
-    if (searchContainer && !searchContainer.contains(e.target)) {
+    if (searchContainer && !searchContainer.contains(e.targe)) {
         hideHistoryDropdown();
     }
 });
