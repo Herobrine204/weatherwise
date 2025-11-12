@@ -17,7 +17,6 @@ body {
     font-size: 100%;
 }
 
-/* --- LOGO HEADER STYLE --- */
 .logo-header {
     position: absolute;
     top: 1.5em;
@@ -25,7 +24,7 @@ body {
     display: flex;
     align-items: center;
     color: whitesmoke;
-    z-index: 100; /* Stay on top */
+    z-index: 100; 
 }
 
 .logo-header img {
@@ -38,8 +37,6 @@ body {
     font-size: 1.5em;
     font-weight: 600;
 }
-/* --- END OF LOGO STYLE --- */
-
 
 .card {
     background: rgba(255, 255, 255, 0.08); 
@@ -60,7 +57,6 @@ body {
     flex-shrink: 0;
 }
 
-/* --- STYLES FOR INFO BOXES --- */
 .info-container {
     display: flex;
     justify-content: space-between;
@@ -82,14 +78,12 @@ body {
     border-radius: 30px;
     flex-basis: 50%; 
     
-    /* --- Animation --- */
     transition: all 0.5s ease-out;
     visibility: visible;
     opacity: 1;
     transform: translateY(0);
 }
 
-/* --- 'loading' state for info boxes --- */
 .info-box.loading {
     visibility: hidden;
     opacity: 0;
@@ -147,8 +141,6 @@ body {
     font-size: 1.1em;
     font-weight: 600;
 }
-/* --- END OF INFO BOX STYLES --- */
-
 
 .search {
     display: flex;
@@ -288,7 +280,6 @@ input.searchbar:focus::placeholder {
 }
 
 
-/* Solid, dark background for high visibility */
 .history-dropdown {
     position: absolute;
     top: calc(100% + 5px); 
@@ -343,26 +334,22 @@ input.searchbar:focus::placeholder {
     color: #7E0023;
 }
 
-/* --- FOOTER STYLE --- */
 footer {
     text-align: center;
     color: rgba(245, 245, 245, 0.7); 
     padding: 1em 0 2em 0;
     font-size: 0.9em;
-    /* Pushes footer to the bottom */
     margin-top: auto;
 }
 
 
 @media screen and (max-width: 950px) {
-    /* --- Adjust logo for mobile --- */
     .logo-header {
         top: 1em;
         left: 1.5em;
     }
     
     body {
-        /* Re-adjust padding for logo */
         padding-top: 5em;
     }
 
@@ -373,7 +360,6 @@ footer {
         border-radius: 30px; 
     }
 
-    /* --- Stack info boxes on mobile --- */
     .info-container {
         flex-direction: column;
         margin-left: 0.5em;
@@ -412,12 +398,9 @@ footer {
     }
 }
 
-
-/* --- STYLES FOR NEW SAFETY METER --- */
-
 .safety-meter {
-    margin-bottom: 1.5em; /* Adds space before the h3 */
-    padding-bottom: 1em; /* Adds space before the h3's border-bottom */
+    margin-bottom: 1.5em; 
+    padding-bottom: 1em; 
     border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }
 
@@ -445,8 +428,8 @@ footer {
 
 #safety-bar-fill {
     height: 100%;
-    width: 0%; /* This will be set by JavaScript */
-    background: #00E400; /* Default "good" color */
+    width: 0%; 
+    background: #00E400; 
     border-radius: 5px;
     transition: width 0.5s ease, background-color 0.5s ease;
 }
