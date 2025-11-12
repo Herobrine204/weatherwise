@@ -20,7 +20,6 @@ def get_weather():
         return jsonify({"error": "API key is not configured on the server"}), 500
 
     try:
-        # Call 1: Get Current Weather
         weather_url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&appid={API_KEY}"
         weather_response = requests.get(weather_url)
         weather_response.raise_for_status()
@@ -29,13 +28,11 @@ def get_weather():
         lat = weather_data['coord']['lat']
         lon = weather_data['coord']['lon']
         
-        # Call 2: Get Air Quality Index
         aqi_url = f"http://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={API_KEY}"
         aqi_response = requests.get(aqi_url)
         aqi_response.raise_for_status()
         aqi_data = aqi_response.json()
 
-        # Combine data
         combined_data = {
             "name": weather_data['name'],
             "icon": weather_data['weather'][0]['icon'],
@@ -45,7 +42,6 @@ def get_weather():
             "speed": weather_data['wind']['speed'],
             "pm2_5": aqi_data['list'][0]['components']['pm2_5'],
             
-            # --- THIS IS THE CRITICAL ADDITION ---
             "lat": lat,
             "lon": lon
         }
@@ -62,7 +58,6 @@ def get_weather():
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {e}"}), 500
 
-# --- THIS IS THE NEW SECURE FORECAST ENDPOINT ---
 @app.route('/forecast')
 def get_forecast():
     lat = request.args.get('lat')
