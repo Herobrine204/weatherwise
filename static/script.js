@@ -169,10 +169,61 @@ function getPm25Details(pm2_5) {
 }
 
 /**
+ * Calculates a safety score from 0-100 based on weather data.
+ */
+function calculateSafetyScore(data) {
+    const { speed, description, pm2_5, temp } = data;
+    let score = 100; // Start at 100%
+
+    // 1. PM2.5 (can deduct up to 40 points)
+    if (pm2_5 > 150.4) { score -= 40; } // Unhealthy+
+    else if (pm2_5 > 55.4) { score -= 25; } // Unhealthy for Sensitive
+    else if (pm2_5 > 35.4) { score -= 10; } // Moderate
+
+    // 2. Temperature (can deduct up to 20 points for extremes)
+    if (temp > 40 || temp < -5) { score -= 20; } // Extreme temp
+    else if (temp > 35 || temp < 5) { score -= 10; } // Very hot/cold
+
+    // 3. Wind (can deduct up to 20 points)
+    if (speed > 50) { score -= 20; }
+    else if (speed > 30) { score -= 10; }
+
+    // 4. Description (can deduct up to 50 points for hazards)
+    if (description.includes("thunderstorm")) { score -= 50; }
+    else if (description.includes("fog") || description.includes("haze") || description.includes("mist")) { score -= 15; }
+    else if (description.includes("rain")) { score -= 10; }
+    
+    return Math.max(0, Math.round(score)); // Return 0-100
+}
+
+
+/**
  * --- Updates the Safety Tips box ---
  */
 function updateSafetyInfo(data) {
     const { speed, description, pm2_5 } = data;
+
+    // --- NEW: Calculate and Display Safety Score ---
+    const safetyScore = calculateSafetyScore(data);
+    
+    const percentageEl = document.getElementById('safety-percentage');
+    const barFillEl = document.getElementById('safety-bar-fill');
+
+    if (percentageEl && barFillEl) {
+        percentageEl.innerText = `${safetyScore}%`;
+        barFillEl.style.width = `${safetyScore}%`;
+
+        // Update bar color based on score
+        if (safetyScore < 30) {
+            barFillEl.style.backgroundColor = '#FF0000'; // Red
+        } else if (safetyScore < 60) {
+            barFillEl.style.backgroundColor = '#FFFF00'; // Yellow
+        } else {
+            barFillEl.style.backgroundColor = '#00E400'; // Green
+        }
+    }
+    // --- END OF NEW SECTION ---
+
     let tips = [];
     
     // PM2.5 Tips
