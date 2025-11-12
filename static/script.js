@@ -1,13 +1,6 @@
-// Key for saving history in localStorage
 const SEARCH_HISTORY_KEY = 'weatherwise-history';
 
-// --- No API Key prompt needed! ---
-
-/**
- * --- Fetches the 5-day forecast from OUR backend ---
- */
 async function fetchForecast(lat, lon) {
-    // This now calls your own server, which is 100% safe
     const forecastUrl = `/forecast?lat=${lat}&lon=${lon}`;
     
     try {
@@ -21,23 +14,18 @@ async function fetchForecast(lat, lon) {
             throw new Error(`Forecast error: ${data.error}`);
         }
         
-        displayForecast(data); // Send the full data to be processed
+        displayForecast(data); 
     } catch (error) {
         console.error("Error fetching forecast:", error);
-        // We won't alert, but we'll show an error in the box
         const forecastContainer = document.getElementById('forecast-container');
         forecastContainer.innerHTML = 'Forecast unavailable.';
-        // Still remove loading so the error is visible
         document.getElementById('forecast-box').classList.remove('loading');
     }
 }
 
-/**
- * --- Processes and displays the 5-day forecast ---
- */
 function displayForecast(data) {
     const forecastContainer = document.getElementById('forecast-container');
-    forecastContainer.innerHTML = ''; // Clear old forecast
+    forecastContainer.innerHTML = ''; 
     
     const forecastList = data.list;
     if (!forecastList) {
@@ -47,11 +35,11 @@ function displayForecast(data) {
     }
     
     const dailyData = [
-        forecastList[4], // Tomorrow
-        forecastList[12], // Day 2
-        forecastList[20], // Day 3
-        forecastList[28], // Day 4
-        forecastList[36]  // Day 5
+        forecastList[4], 
+        forecastList[12], 
+        forecastList[20], 
+        forecastList[28], 
+        forecastList[36]  
     ];
 
     const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -73,21 +61,17 @@ function displayForecast(data) {
         forecastContainer.appendChild(box);
     });
 
-    // --- Remove loading class to trigger animation ---
     document.getElementById('forecast-box').classList.remove('loading');
 }
 
 
-/**
- * Gets history from localStorage and builds the new dropdown
- */
 function populateHistoryDropdown() {
     const history = JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY)) || [];
     const dropdown = document.getElementById('history-dropdown');
     
     if (!dropdown) return;
 
-    dropdown.innerHTML = ''; // Clear old items
+    dropdown.innerHTML = ''; 
 
     if (history.length === 0) {
         dropdown.innerHTML = '<div class="history-item" style="cursor:default;">No recent searches</div>';
@@ -109,9 +93,6 @@ function populateHistoryDropdown() {
     dropdown.classList.add('visible');
 }
 
-/**
- * Hides the custom dropdown
- */
 function hideHistoryDropdown() {
     const dropdown = document.getElementById('history-dropdown');
     if (dropdown) {
@@ -119,9 +100,6 @@ function hideHistoryDropdown() {
     }
 }
 
-/**
- * Saves a new city to the search history in localStorage.
- */
 function saveSearch(city) {
     if (!city || city.trim() === "") return; 
 
@@ -137,10 +115,6 @@ function saveSearch(city) {
     localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
 }
 
-/**
- * A helper function to get the air quality details
- * based on the PM2.5 value.
- */
 function getPm25Details(pm2_5) {
     let text = "";
     let cssClass = "";
@@ -168,42 +142,31 @@ function getPm25Details(pm2_5) {
     return { text: text, cssClass: cssClass };
 }
 
-/**
- * Calculates a safety score from 0-100 based on weather data.
- */
 function calculateSafetyScore(data) {
     const { speed, description, pm2_5, temp } = data;
-    let score = 100; // Start at 100%
+    let score = 100; 
 
-    // 1. PM2.5 (can deduct up to 40 points)
-    if (pm2_5 > 150.4) { score -= 40; } // Unhealthy+
-    else if (pm2_5 > 55.4) { score -= 25; } // Unhealthy for Sensitive
-    else if (pm2_5 > 35.4) { score -= 10; } // Moderate
+    if (pm2_5 > 150.4) { score -= 40; } 
+    else if (pm2_5 > 55.4) { score -= 25; } 
+    else if (pm2_5 > 35.4) { score -= 10; } 
 
-    // 2. Temperature (can deduct up to 20 points for extremes)
-    if (temp > 40 || temp < -5) { score -= 20; } // Extreme temp
-    else if (temp > 35 || temp < 5) { score -= 10; } // Very hot/cold
+    if (temp > 40 || temp < -5) { score -= 20; } 
+    else if (temp > 35 || temp < 5) { score -= 10; } 
 
-    // 3. Wind (can deduct up to 20 points)
     if (speed > 50) { score -= 20; }
     else if (speed > 30) { score -= 10; }
 
-    // 4. Description (can deduct up to 50 points for hazards)
     if (description.includes("thunderstorm")) { score -= 50; }
     else if (description.includes("fog") || description.includes("haze") || description.includes("mist")) { score -= 15; }
     else if (description.includes("rain")) { score -= 10; }
     
-    return Math.max(0, Math.round(score)); // Return 0-100
+    return Math.max(0, Math.round(score)); 
 }
 
 
-/**
- * --- Updates the Safety Tips box ---
- */
 function updateSafetyInfo(data) {
     const { speed, description, pm2_5 } = data;
 
-    // --- NEW: Calculate and Display Safety Score ---
     const safetyScore = calculateSafetyScore(data);
     
     const percentageEl = document.getElementById('safety-percentage');
@@ -213,20 +176,17 @@ function updateSafetyInfo(data) {
         percentageEl.innerText = `${safetyScore}%`;
         barFillEl.style.width = `${safetyScore}%`;
 
-        // Update bar color based on score
         if (safetyScore < 30) {
-            barFillEl.style.backgroundColor = '#FF0000'; // Red
+            barFillEl.style.backgroundColor = '#FF0000'; 
         } else if (safetyScore < 60) {
-            barFillEl.style.backgroundColor = '#FFFF00'; // Yellow
+            barFillEl.style.backgroundColor = '#FFFF00'; 
         } else {
-            barFillEl.style.backgroundColor = '#00E400'; // Green
+            barFillEl.style.backgroundColor = '#00E400'; 
         }
     }
-    // --- END OF NEW SECTION ---
 
     let tips = [];
     
-    // PM2.5 Tips
     if (pm2_5 <= 12.0) {
         tips.push("✔️ Air quality is excellent.");
     } else if (pm2_5 <= 55.4) {
@@ -235,7 +195,6 @@ function updateSafetyInfo(data) {
         tips.push("❌ Air quality is poor. Avoid outdoor activity and wear a mask if outside.");
     }
     
-    // Weather Description Tips
     if (description.includes("rain")) {
         tips.push("☔ It's raining. Don't forget an umbrella!");
     }
@@ -249,21 +208,18 @@ function updateSafetyInfo(data) {
         tips.push("🌫️ Low visibility. Be careful if driving.");
     }
     
-    // Wind Tips
     if (speed > 30) {
         tips.push("💨 High winds! Secure loose items outdoors.");
     }
 
-    // --- Update the HTML ---
     const tipsList = document.getElementById('safety-tips');
-    tipsList.innerHTML = ''; // Clear old tips
+    tipsList.innerHTML = ''; 
     tips.forEach(tip => {
         const li = document.createElement('li');
         li.innerText = tip;
         tipsList.appendChild(li);
     });
 
-    // --- Remove loading class to trigger animation ---
     document.getElementById('tips-box').classList.remove('loading');
 }
 
@@ -295,7 +251,6 @@ let weather = {
     displayWeather: function(data) {
         const { name, icon, description, temp, humidity, speed, pm2_5, lat, lon } = data;
         
-        // Update the main weather bar
         document.querySelector(".city").innerText = "Weather in " + name;
         document.querySelector(".icon").src = "https://openweathermap.org/img/wn/" + icon + ".png";
         document.querySelector(".description").innerText = description;
@@ -306,18 +261,16 @@ let weather = {
         let pm25Element = document.querySelector(".pm25");
         let pm25Details = getPm25Details(pm2_5);
         pm25Element.innerText = `PM2.5: ${pm2_5} μg/m³ (${pm25Details.text})`;
-        pm25Element.className = "pm25"; // Reset classes
-        pm25Element.classList.add(pm25Details.cssClass); // Add new AQI class
+        pm25Element.className = "pm25"; 
+        pm25Element.classList.add(pm25Details.cssClass); 
 
         document.querySelector(".weather").classList.remove("loading");
         
-        // --- Call BOTH functions ---
-        updateSafetyInfo(data); // Update the tips
-        fetchForecast(lat, lon); // Fetch the 5-day forecast
+        updateSafetyInfo(data); 
+        fetchForecast(lat, lon); 
     },
 
     search : function() {
-        // --- Add loading class back before searching ---
         document.getElementById('tips-box').classList.add('loading');
         document.getElementById('forecast-box').classList.add('loading');
         
@@ -345,14 +298,11 @@ document.querySelector('.searchbar').addEventListener('focus', () => {
     populateHistoryDropdown();
 });
 
-// --- THIS IS THE BUG FIX ---
 window.addEventListener('click', function(e) {
     const searchContainer = document.querySelector('.search');
-    // 'e.targe' is now 'e.target'
     if (searchContainer && !searchContainer.contains(e.target)) {
         hideHistoryDropdown();
     }
 });
 
-// Load default city on startup
 weather.fetchWeather("Delhi");
