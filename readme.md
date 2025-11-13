@@ -35,9 +35,9 @@ This project is a great example of a modern "client-server" application. The fro
 
 * **Framework:** Pure HTML, CSS, and JavaScript.
 * **Role:** To display the data and interact with the user.
-* **`index.html`:** Provides the simple structure for the search bar and the weather card.
-* **`style.css`:** Provides the "translucent blur" effect for the card, sets the beautiful scenery background, and handles all text styling (including the dynamic AQI colors).
-* **`script.js`:**
+* **`index.html` in `templates`:** Provides the simple structure for the search bar and the weather card.
+* **`style.css`in `static`:** Provides the "translucent blur" effect for the card, sets the beautiful scenery background, and handles all text styling (including the dynamic AQI colors).
+* **`script.js`in `static`:**
     1.  Listens for a "click" on the search button or an "Enter" key press.
     2.  Takes the city name from the search bar.
     3.  Calls our *own* Flask backend (`/weather`), not the public OpenWeatherMap API.
